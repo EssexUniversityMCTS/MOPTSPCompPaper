@@ -110,19 +110,62 @@ Regarding the third objective, the ship can be damaged by two different game pla
 
 When the ship is damaged by a collision, it enters in an invulnerable state, where no more collision damage can be dealt to the agent (although lava still affects the ship) during $50$ game steps. This avoids situations when too much damage is suffered by the ship if it is touching an obstacle right after colliding with it.
 
+\subsection{Game Maps}
+
+Each level for the MO-PTSP game follows a specific format, based on the one that Nathan Sturtevant defined and was employed in several games such as Warcraft, Starcraft or Baldur's Gate. This type of maps have been used by some researchers in the literature before~\footnote{\url{http://movingai.com/benchmarks/dao/}}. The levels are stored in ASCII files, where each character determines the type of object or surface located at that pixel in the map grid. For MO-PTSP, these symbols are detailed next:
+
+\begin{itemize}
+\item Obstacles are represented by the characters 'T', 'D' and 'L', to be used to create normal, damaging and elastic obstacles respectively.
+\item Normal surfaces use the character '.', while lava lakes employ ':'.
+\item Waypoints and fuel canisters are indicated with 'C' and 'F' respectively.
+\item The player's ship is represented by the character 'S'.
+\end{itemize}
+
+Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn by the framework. Not visited waypoints are depicted as (filled) blue circles, while the already visited ones are shown as empty circles. Green ellipsis are used for the fuel canisters. Normal surface is brown, whereas lava is a red-dotted yellow surface. Elastic collisions are blue, normal collisions black and damaging collisions are drawn in red. The ship is drawn as a dark blue polygon, with a green triangle at the back denoting thrust being used. The trajectory followed by the ship is drawn with a black line.
+
+\begin{figure} [!h]
+	\begin{center}
+	\includegraphics[scale=0.5]{img/sampleMap}
+	\caption{Sample MO-PTSP map.}
+	\label{fig:sampleMap}
+	\end{center}
+\end{figure}
+
+
+\section{The MO-PTSP Framework}
+
+\subsection{Game flow}
+\todo[inline]{game flow}
+
+\subsection{Software}
+
+\todo[inline]{software organization}
+
+\subsection{Controllers}
+
+\todo[inline]{Programming specification, API, language, pathfinding.}
+
+
 \section{The MO-PTSP Competition}
 
-\todo[inline]{Infrastructure of the competition, rules, how entries are ranked.
-Evaluation, submission, programming specification, API.
-Sample controllers: random, greedy, macro-action random search controller. Include some measurements.}
+\subsection{Competition format}
+\todo[inline]{Infrastructure of the competition, rules}
 
-\section{The winning entry}
+\subsection{Submission and evaluation}
 
-\todo[inline]{YORK DESCRIPTION.}
+\todo[inline]{Submission, Different phases, maps. Ranking in a map, ranking in the competition}
+
+\subsection{Sample Controllers}
+
+\todo[inline]{Sample controllers: random, greedy, macro-action random search controller. Include some measurements.}
 
 \section{Results of the competition}
 
 \todo[inline]{Describe results in detail.}
+
+\section{The winning entry}
+
+\todo[inline]{YORK DESCRIPTION.}
 
 \section{Conclusions}
 

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="4a538f59-5004-4766-8b9c-32d2375669b7" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/framework/ExecSync.java" afterPath="$PROJECT_DIR$/src/framework/ExecSync.java" />
-    </list>
+    <list default="true" readonly="true" id="4a538f59-5004-4766-8b9c-32d2375669b7" name="Default" comment="" />
     <ignored path="moptsp-competition.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="4a538f59-5004-4766-8b9c-32d2375669b7" time="1386166988191" ignored="false" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="4a538f59-5004-4766-8b9c-32d2375669b7" time="1386175611731" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,10 +79,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PTSPConstants.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="PTSPConstants.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/framework/core/PTSPConstants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="31" selection-start="2279" selection-end="2279" vertical-scroll-proportion="0.36842105">
+            <state line="78" column="31" selection-start="2279" selection-end="2279" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ptsp_map01.map" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/maps/ptsp_map01.map">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="91" selection-start="1607" selection-end="1607" vertical-scroll-proportion="-14.433409">
               <folding />
             </state>
           </provider>
@@ -223,6 +230,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="moptsp-competition" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="code" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maps" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -411,7 +432,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
+    <frame x="-8" y="-8" width="1616" height="876" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -538,7 +559,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/framework/core/PTSPConstants.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="31" selection-start="2279" selection-end="2279" vertical-scroll-proportion="0.36842105">
+        <state line="78" column="31" selection-start="2279" selection-end="2279" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/maps/ptsp_map01.map">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="91" selection-start="1607" selection-end="1607" vertical-scroll-proportion="-14.433409">
           <folding />
         </state>
       </provider>
