@@ -317,7 +317,125 @@ The set of maps is renewed every few weeks, in order to avoid the controllers to
 
 \section{The winning entry}
 
-\todo[inline]{YORK DESCRIPTION.}
+This section gives a high-level overview of the winning entry, \textsc{PurofMovio}.
+Further details can be found in~\cite{Powley2013_moptsp}.
+\textsc{PurofMovio} is based on \textsc{Purofvio}, the winning entry to the previous (single-objective) PTSP competitions~\cite{Powley2012,Perez2013}.
+
+\subsection{Architecture}
+
+The controller has three main components.
+
+\subsubsection{Distance mapper}
+During controller initialisation, the shortest-path distance between every waypoint and every other pixel on the map is computed
+using a scanline flood fill algorithm~\cite{Lieberman1978}.
+This means that during controller execution
+the distance of a future ship position from the next waypoint can be queried rapidly.
+The distance mapper takes lava into account when computing distances:
+moving across a pixel of lava costs the same as moving across $1+\gamma$ pixels of empty space,
+where $\gamma$ is a tunable parameter.
+An example of a distance map is shown in Figure~\ref{fig:distance-map-weighted}.
+
+\begin{figure}%
+\begin{center}
+	\includegraphics[width=0.8\columnwidth]{img/distance-map-weighted.png}%
+\end{center}
+\caption{An example of a distance map with a lava weighting of $\gamma = 1$. The contour lines correspond to distances a multiple of $25$ pixels from the origin (shown as a dot).}%
+\label{fig:distance-map-weighted}%
+\end{figure}
+
+\subsubsection{Route planner}
+Also during controller initialisation, the order in which to visit the waypoints is determined.
+Fuel tanks are also included as ``optional'' waypoints.
+The route planner uses classical TSP methods, namely the multiple fragment heuristic~\cite{Bentley1990} and 3-opt local search with first improvement~\cite{Lin1965,Johnson1997}.
+The edge weights in the TSP graph are the shortest-path distances calculated by the distance mapper.
+
+3-opt is a hill-climbing algorithm.
+Starting from an initial path,
+it considers all triples of edges in the path
+and all ways in which the path can be reconnected when those edges are deleted.
+If a resulting path has a lower cost than the initial path,
+the new path is kept and the process begins again.
+This continues until no further improvements can be made.
+In the classical TSP the cost of a path is its length, i.e. the sum of the weights of its constituent edges.
+In \textsc{PurofMovio} the cost measure is modified to take the physics of MO-PTSP into account:
+paths which require sharp turns at waypoints or indirect paths between waypoints incur cost penalties.
+
+\subsubsection{Ship controller}
+During controller execution,
+the ship is controlled by Monte Carlo Tree Search (MCTS)~\cite{MCTSSurvey}
+with several modifications to deal with the real-time aspect of the problem.
+Instead of choosing a potentially different action on every time step,
+the controller instead chooses a \emph{macro-action},
+an action to be repeated for the next $T$ time steps.
+This means that instead of having $40$ milliseconds to choose each action,
+the controller has $40T$ milliseconds to choose each macro-action.
+This reduces the controller's ability to make fine-grained adjustments to the ship,
+but is a worthwhile tradeoff.
+
+The second modification deals with the length of the game,
+which even with macro-actions can result in a decision tree several hundred plies deep.
+We impose a fixed horizon on MCTS. After $d$ plies,
+all states are treated as terminal: children are not expanded, simulations are halted.
+The resulting nonterminal state is evaluated by a heuristic evaluation function.
+The most crucial terms in the evaluation function are the number of waypoints collected so far, and the distance from the ship to the next waypoint in the route.
+There are also evaluation terms for fuel and damage, with tunable parameters to control the emphasis placed on these objectives.
+
+\begin{figure}%
+\includegraphics[width=\columnwidth]{img/local-optimum.pdf}%
+\caption{Illustration of a low quality local optimum in a simplified \mbox{$1$-dimensional} version of MO-PTSP.}%
+\label{fig:local-optimum}%
+\end{figure}
+
+The controller may sometimes become trapped in a local optimum,
+where the search horizon is too short to see a path towards the next waypoint.
+An example of this is shown in Figure~\ref{fig:local-optimum}.
+The fitness function gives a reward for approaching the next waypoint but a penalty for damage incurred by driving through lava.
+The playout length is insufficient for the search to determine that driving through the lava eventually leads to the next waypoint and thus a higher fitness,
+so the controller instead decides to sit at the edge of the lava until the game times out.
+We introduced a mechanism called \emph{panic mode} to deal with this:
+if it is detected that MCTS is failing to find lines of play that make progress towards the goal,
+the search switches to an alternative evaluation function which more aggressively guides the controller towards the next waypoint (ignoring fuel and damage).
+The original evaluation takes over again once the controller is unstuck from the local optimum.
+We found that panic mode has a limited impact on the time, fuel and damage scores of the controller,
+but improves its ability to collect all waypoints without timing out.
+
+\subsection{Parameter tuning}
+
+\textsc{PurofMovio} has $18$ tunable parameters in total.
+We found hand-tuning of the parameters to be challenging:
+small changes in parameter values can have large and unpredictable effects on the behaviour of the controller,
+and the randomised nature of MCTS makes it difficult to assess whether an observed change in behaviour is due to a recent parameter change
+or simply a lucky or unlucky run.
+
+The parameters were tuned using the \emph{Covariance Matrix Adaptation Evolution Strategy (CMA-ES)} algorithm~\cite{Hansen2001}.
+CMA-ES optimises a vector of real-valued parameters by repeating three steps:
+first, a population is sampled at random according to a multivariate normal distribution;
+second, the population is sorted in order of fitness;
+third, the fittest individuals are used to skew the distribution used for subsequent samples.
+As these three steps are repeated, the sampling distribution converges on an optimum.
+
+Since CMA-ES does not use scalar fitness values but only the fitness ranking of the population,
+it is readily adapted to multiobjective problems~\cite{Igel2007}.
+To measure the fitness of a particular parameter vector,
+the controller is executed once on each of the $10$ starter kit maps and the total time, fuel and damage are measured.
+The population is then ranked by \emph{non-dominated sorting}:
+individuals on the Pareto front receive rank~$1$ and are removed;
+from what remains of the population, individuals on the new Pareto front receive rank~$2$ and are removed;
+and so on until the population is exhausted.
+Within each rank, the individuals are sorted by the sum of time, fuel and damage, with equal weights.
+Igel et al~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but due to time constraints we chose not to implement these.
+
+Results of parameter tuning are presented in~\cite{Powley2013_moptsp}.
+We ran the parameter tuning three times, obtaining three different sets of parameters.
+The three tuned controllers outperform our best efforts at hand-tuning,
+but make slightly different tradeoffs between the three objectives:
+for example the third set performs worse on time than the other two, but uses significantly less fuel.
+
+CMA-ES is able to handle noisy and esoteric fitness landscapes, and is explicitly designed not to require tuning.
+This makes it especially attractive as a ``black box'' optimisation method;
+the mathematics behind it is sophisticated but can largely be ignored by the user.
+A mature Java implementation has been made freely available by the algorithm's creators\footnote{\url{https://www.lri.fr/~hansen/}},
+and this implementation was used to tune the parameters for \textsc{PurofMovio}.
 
 \section{Conclusions}
 
