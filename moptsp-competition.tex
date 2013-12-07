@@ -53,17 +53,18 @@ breakatwhitespace=false,        				% sets if automatic breaks should only
 \maketitle
 
 \begin{abstract}
-Numerous competitions have emerged in recent years... and this is another one.
+This paper presents the game, framework, rules and results of the Multi-objective Physical Travelling Salesman Problem Competition (MO-PTSP), that was held in the 2013 Conference on Computational Intelligence in Games (CIG). The MO-PTSP Game is a modification of the Travelling Salesman Problem, where the player controls a ship that must visit a series of waypoints in a maze while minimizing three opposing goals: time spent, fuel consumed and damage taken. The rankings of the competition are computed using multi-objective concepts, a novel approach in the field of game artificial intelligence competitions. The winning entry of the contest is also explained in detail. This controller is based on the Monte Carlo Tree Search algorithm, and employed CMA-ES for parameter tuning. 
 \end{abstract}
 
 % no key words
 
 \section{Introduction}
 
-\todo[inline]{Research in games and competitions.
-Literature review.}~\cite{PerezCEC2012,MCTSSurvey}.
+\todo[inline]{A little bit of introduction for game competitions.}~\cite{PerezCEC2012}.
 
-\section{The Multi-objective Travelling Salesman Problem}
+This paper is organized as follows: Section~\ref{sec:moptsp} explains the game used in the competition. Then, Section~\ref{sec:contr} details the game framework and how controllers for this game can be created. Later, Section~\ref{sec:comp} defines the competition, its different tracks and rules, leaving the results of the contest for Section~\ref{sec:res}. Section~\ref{sec:purofmovio} explains the approach taken by the competition winner and, finally, Section~\ref{sec:conc} concludes this paper with a final evaluation of the competition.
+
+\section{The Multi-objective Travelling Salesman Problem} \label{sec:moptsp}
 
 The Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) is a modification of the Physical Travelling Salesman Problem (PTSP), previously introduced by Perez et al.~\cite{PerezCEC2012} for the WCCI 2012 PTSP Competition. The PTSP is a game where the player controls a ship with the goal of visiting $10$ waypoints scattered around the maze in as little time as possible. MO-PTSP adds two more goals to the game: doing this spending as less fuel as possible and reducing the damage suffered by the ship. This section specifies the main components of the MO-PTSP game, such as the game physics, objectives, rules and maps. 
 
@@ -153,10 +154,10 @@ Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn 
 \end{figure}
 
 
-\section{The MO-PTSP Framework}
+\section{The MO-PTSP Framework} \label{sec:contr}
 
 
-\subsection{Software}
+\subsection{Software} \label{ssec:software}
 
 The MO-PTSP framework code can be downloaded from the competition webpage~\footnote{\url{http://www.ptsp-game.net/}}. The framework, under the name of \textit{Starter Kit}, contains the code, documentation, and 10 maps to test the controllers in. The software is written in Java, and it is organised in the following packages:
 
@@ -222,7 +223,17 @@ A very important function that \code{Game} exposes to the controller is \code{ti
 
 The framework also comes with a simple implementation of path-finding using the A* algorithm. A 8-way connected graph is created in the navigable parts of the map, given a certain granularity (separation between the graph's nodes). This graph is only created if the agents wants to use it, so the computational time it takes is not detrimental to those participants who do not want to use it, or prefer to work on a more sophisticated/efficient path-finding implementation for the game.
 
-\section{The MO-PTSP Competition}
+\subsection{Sample Controllers} \label{ssec:sample} 
+
+The MO-PTSP framework contains several sample bots in order to ease the creation of controllers for the game. In a gradual complexity, these samples show how to operate with the different methods and libraries that the framework includes.
+
+The simplest sample controllers are \textit{RandomController} and \textit{WoxController}, both of them executing actions at random, with the peculiarity that the latter one shows how to operate with the Wox library (as mentioned in Section~\ref{ssec:software}).
+
+This random behaviour is enhanced in \textit{LineOfSightController}, that navigates towards a certain destination when a waypoint or fuel canister is in line of sight with the ship. The sample \textit{GreedyController} takes care of the waypoints and canisters that are not visible to the ship by means of the pathfinding library included in the framework.
+
+The most complex sample controller is \textit{MacroRSController}. This bot makes use of macro-actions (or repetitions of the same action), a concept exploited in the previous PTSP competition by the winner and other entries. The idea is simple: instead of applying the decided move to make in just one game step, it is performed in the next $n$ cycles. This way, the algorithm is able to employ the next $n$ game steps to decide the next sequence of moves to make, increasing the budget time to $40ms \times n$. A stochastic hill climber algorithm is used to search for the actions to apply in the next move.
+
+\section{The MO-PTSP Competition} \label{sec:comp}
 
 \subsection{Controllers for the competition}
 
@@ -288,14 +299,14 @@ Weijia & $10$ & $1809$ & $590$ & $485$ & $0$\\
 \end{center}
 \end{table}
 
-Another important aspect to determine is how many runs a controller performs in a given map. On one hand, only a single run (also referred here as a \textit{match}) would penalize those unlucky cases where the controller behaved poorly, or even did not visit all waypoints. On the other hand, running several matches and calculating the average for each objective would provide misleading results (a controller could try to optimize only one objective per run, and the average would show results that do not match with the real behaviour in a single match.
+Another important aspect to determine is how many runs a controller performs in a given map. On one hand, only a single run (also referred here as a \textit{match}) would penalize those unlucky cases where the controller behaved poorly, or even did not visit all waypoints. On the other hand, running several matches and calculating the average for each objective would provide misleading results (a controller could try to optimize only one objective per run, and the average would show results that do not match with the real behaviour in a single match).
 
 The approach taken in this competition is the following. Each controller is allowed to run a maximum of $5$ times on each map, but the evaluation stops as soon as one match visits all waypoints. Then, the result of that particular run is used to rank the entry.
 
 Finally, when a controller is evaluated in a set of $n$ maps, the final score is the sum of the points awarded on each one of these levels. To compute the rankings in a set of maps, the entries are sorted according to this total amount of points, and the one with the highest score is declared the winner.
 	
 	
-\subsection{Competition Rankings}
+\subsection{Competition Tracks}
 
 The MO-PTSP Competition is composed of three different tracks, all of them running in parallel.
 
@@ -307,15 +318,71 @@ The set of maps is renewed every few weeks, in order to avoid the controllers to
 
 \subsubsection{Human vs. Bot Competition Track} Every time a controller is submitted to the bot competition track, it is also executed in the starter kit maps. Then, a separated ranking is calculated between the results obtained by the bots and the humans in these maps, allowing a direct comparison between bots and humans in the MO-PTSP game.
 
-\subsection{Sample Controllers} \label{ssec:sample} 
+\section{Results of the competition} \label{sec:res}
 
-\todo[inline]{Sample controllers: random, greedy, macro-action random search controller. Include some measurements.}
+The MO-PTSP Competition was held in the 2013  Conference of Computational Intelligence in Games (CIG). The contest received $6$ submissions, and the final rankings also included two of the sample controllers explained in Section~\ref{ssec:sample}: \textit{GreedyController} and \textit{MacroRSController}.
 
-\section{Results of the competition}
+\begin{table*}[!t]
+	\centering
+	\begin{tabular}{|>{\centering\arraybackslash}m{0.65cm}|>{\centering\arraybackslash}m{2.6cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.19cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|p{0.2cm}|>{\centering\arraybackslash}m{0.6cm}|}
+		\hline	
+		\textbf{Rank} & \textbf{Bot} $\backslash$ \textbf{Map}&\textbf{1}&\textbf{2}&\textbf{3}&\textbf{4}&\textbf{5}&\textbf{6}&\textbf{7}&\textbf{8}&\textbf{9}&\textbf{10}&\textbf{11}&\textbf{12}&\textbf{13}&\textbf{14}&\textbf{15}&\textbf{16}&\textbf{17}&\textbf{18}&\textbf{19}&\textbf{20}&\textbf{Total}\\
+		\hline
+$1$&PurofMovio&$10$&$10$&$25$&$10$&$10$&$10$&$10$&$10$&$10$&$25$&$10$&$10$&$25$&$10$&$25$&$10$&$25$&$25$&$25$&$10$&\textbf{305}\\
+		\hline
+$2$&Weijia&$3$&$1$&$0$&$3$&$0$&$3$&$3$&$3$&$3$&$0$&$3$&$3$&$0$&$3$&$0$&$3$&$0$&$0$&$0$&$0$&\textbf{31}\\
+		\hline
+$3$&MacroRSController&$0$&$3$&$0$&$0$&$3$&$0$&$1$&$0$&$0$&$0$&$0$&$0$&$0$&$1$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{8}\\
+		\hline
+$4$&GreedyConroller&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$3$&\textbf{3}\\
+		\hline
+$5$&LordOkami&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{0}\\
+		\hline
+$5$&age\_uc3m&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{0}\\
+		\hline
+$5$&izzwish15&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{0}\\
+		\hline
+$5$&Yasameer&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{0}\\
+		\hline
+	\end{tabular}
+	\caption{Bot Track Competition Results. The first two entries are two different version of Monte Carlo Tree Search (MCTS) controllers. The two sample controllers ranked third and fourth, and the other four participants, ranked fifth, took the following approaches, in the order specified in the table: a rule base system, a genetic algorithm to tune the sample GreedyController, Upper Confidence Bounds for Trees and, finally another MCTS approach.}
+	\label{tab:res1}
+\end{table*}
 
-\todo[inline]{Describe results in detail.}
+\begin{table*}[!t]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+		\hline	
+\textbf{Rank} & \textbf{Competitor} $\backslash$ \textbf{Map}&\textbf{Type}&\textbf{1}&\textbf{2}&\textbf{3}&\textbf{4}&\textbf{5}&\textbf{6}&\textbf{7}&\textbf{8}&\textbf{9}&\textbf{10}&\textbf{Total}\\
+		\hline	
+$1$&PurofMovio&Bot&$3$&$25$&$10$&$10$&$10$&$25$&$3$&$10$&$10$&$1$&\textbf{107}\\
+		\hline	
+$2$&mmorenosi&Human&$0$&$0$&$3$&$3$&$1$&$0$&$3$&$3$&$3$&$3$&\textbf{19}\\
+		\hline	
+$3$&epowley&Human&$0$&$0$&$0$&$0$&$3$&$0$&$0$&$1$&$0$&$3$&\textbf{7}\\
+		\hline	
+$4$&Weijia&Bot&$3$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$3$&\textbf{6}\\
+		\hline	
+$5$&MacroRSController&Bot&$0$&$0$&$0$&$0$&$0$&$0$&$3$&$0$&$0$&$0$&\textbf{3}\\
+		\hline	
+$6$&GreedyController&Bot&$3$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&\textbf{3}\\
+		\hline	
+$7$&emsierra&Human&$0$&$0$&$0$&$0$&$0$&$0$&$1$&$0$&$0$&$1$&\textbf{2}\\
+		\hline	
+$8$&LordOkami&Human&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$1$&\textbf{1}\\
+		\hline	
+	\end{tabular}
+	\caption{Humans Versus Bot Track Competition Results}
+	\label{tab:res2}
+\end{table*}
 
-\section{The winning entry}
+Tables~\ref{tab:res1} and~\ref{tab:res2} summarize the results of the bot and human versus bot competition tracks respectively. As can be seen, the winner of both editions is the same controller, \textsc{PurofMovio}, that is described in detail in Section~\ref{sec:purofmovio}.
+
+In the bot track, the winner achieves $305$ points, out of a maximum of $500$. The distance with the second ranked bot, \textsc{Weijia}, is very significant. Although the first two entries are based on MCTS, the approaches are different: while the winner analyzed the quality of a given game state by a weighted sum of features, the second one incorporated multi-objective measurements in the MCTS algorithm~\cite{Wang13}. It is important to notice that the winner entry dominates in all objectives in $7$ maps, while is better in two objectives in the other $13$ levels.
+
+Regarding the humans versus bot track, \textsc{PurofMovio} was able to beat the winner of the human track (here the second best entry: \textsc{mmorenosi}. Although the victory is clear, in this case the points are more distributed among the first $8$ ranked players in this track. A total of $13$ human players participated in both the human and the human versus bot tracks.
+
+\section{The winning entry} \label{sec:purofmovio}
 
 This section gives a high-level overview of the winning entry, \textsc{PurofMovio}.
 Further details can be found in~\cite{Powley2013_moptsp}.
@@ -437,9 +504,9 @@ the mathematics behind it is sophisticated but can largely be ignored by the use
 A mature Java implementation has been made freely available by the algorithm's creators\footnote{\url{https://www.lri.fr/~hansen/}},
 and this implementation was used to tune the parameters for \textsc{PurofMovio}.
 
-\section{Conclusions}
+\section{Conclusions} \label{sec:conc}
 
-\todo[inline]{We had lots of fun.}
+\todo[inline]{We had lots of fun. Also: changes on rankings according to adding/removing entries.}
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,biblio}
