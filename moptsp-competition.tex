@@ -60,7 +60,11 @@ This paper presents the game, framework, rules and results of the Multi-objectiv
 
 \section{Introduction}
 
-\todo[inline]{A little bit of introduction for game competitions.}~\cite{PerezCEC2012}.
+Game competitions have been regularly appearing in artificial intelligence (AI) conferences within the last decade. Apart from being excellent benchmarks for comparing different algorithms in similar scenarios, they are very useful for educational purposes, as many research or graduate students have the opportunity to initiate themselves in the field of artificial intelligence. Assuming these competitions are managed properly, they provide testbeds where participants can test their algorithms in an independent and centralized system (this is, provided by neutral competition organizers), supplying the basis to draw conclusive results.
+
+Different competitions have populated the conferences in the last years, covering different types of problems by presenting different games to play in. Among many others, some of them have been particularly successful: \textit{Ms. Pacman vs. Ghost} competition~\cite{Philipp2011} allowed participants to take part in the popular game of \textit{PacMan} both as the player and the ghost team, exploring agent coordination in the latter case. The \textit{Starcraft} competition~\cite{Weber2011} tackled problems like unit management and partially observable game states, and the popular \textit{Car Racing Competitions}~\cite{Loiacono2010} have as an important feature dealing with opponents in a race.
+
+The purpose of the competition presented in this paper is to cover one of the aspects that had not been analyzed before in AI real-time game competitions: multi-objective optimization. The game proposed for the competition requires the optimization of three different objectives, some of them clearly opposing to others. The outcome of the research in this field would not only benefit games like the one proposed here, but also other \textit{single-objective} games where multi-objective approaches could be taken. As an example, real-time strategy games could benefit from such approaches, as agents usually have to deal with simultaneous tasks: attacking/defensive unit production, resource gathering and world exploration. Additionally, this paper introduces a new way of rankings entries in a game competition, by attending to multi-objective concepts such \textit{Pareto fronts} and \textit{dominance}.
 
 This paper is organized as follows: Section~\ref{sec:moptsp} explains the game used in the competition. Then, Section~\ref{sec:contr} details the game framework and how controllers for this game can be created. Later, Section~\ref{sec:comp} defines the competition, its different tracks and rules, leaving the results of the contest for Section~\ref{sec:res}. Section~\ref{sec:purofmovio} explains the approach taken by the competition winner and, finally, Section~\ref{sec:conc} concludes this paper with a final evaluation of the competition.
 
@@ -380,7 +384,7 @@ Tables~\ref{tab:res1} and~\ref{tab:res2} summarize the results of the bot and hu
 
 In the bot track, the winner achieves $305$ points, out of a maximum of $500$. The distance with the second ranked bot, \textsc{Weijia}, is very significant. Although the first two entries are based on MCTS, the approaches are different: while the winner analyzed the quality of a given game state by a weighted sum of features, the second one incorporated multi-objective measurements in the MCTS algorithm~\cite{Wang13}. It is important to notice that the winner entry dominates in all objectives in $7$ maps, while is better in two objectives in the other $13$ levels.
 
-Regarding the humans versus bot track, \textsc{PurofMovio} was able to beat the winner of the human track (here the second best entry: \textsc{mmorenosi}. Although the victory is clear, in this case the points are more distributed among the first $8$ ranked players in this track. A total of $13$ human players participated in both the human and the human versus bot tracks.
+Regarding the humans versus bot track, \textsc{PurofMovio} was able to beat the winner of the human track (here the second best entry: \textsc{mmorenosi}). Although the victory is clear, in this case the points are more distributed among the first $8$ ranked players in this track. A total of $13$ human players participated in both the human and the human versus bot tracks.
 
 \section{The winning entry} \label{sec:purofmovio}
 
@@ -506,7 +510,12 @@ and this implementation was used to tune the parameters for \textsc{PurofMovio}.
 
 \section{Conclusions} \label{sec:conc}
 
-\todo[inline]{We had lots of fun. Also: changes on rankings according to adding/removing entries.}
+This paper described the Multi-objective Physical Travelling Salesman Problem (MO-PTSP) game and competition, detailing rules, tracks ranking scheme and results. It also analyzed the winning entry of the competition, a Monte Carlo Tree Search (MCTS) algorithm with an heuristic tuned by the CMA-ES algorithm.  
+
+The multi-objective rankings seem to reflect accurately the quality of the solutions, as the winner's approach performance is much higher than that of its competitors. Additionally, it is worthwhile to mention that, in contrast with single-objective rankings, the introduction of new results can change the pareto front that each controller belongs to (as in the introduction of a new result that dominates all others), producing an important change in the points awarded to each entry.
+
+The competition attracted entries that employed different techniques, although most of them were variants of MCTS, a technique that has shown its proficiency in a wide range of problems in the literature and also in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the one proposed by Weijia et al.~\cite{Wang13}. Finally, the winner entry showed the benefits of MCTS as a real-time action decision algorithm, the importance of dividing long term and short term planning (waypoints route against navigation), how coarsening the action space using macro-actions is beneficial for real-time games and the usage of an evolutionary approach to tune the parameters of the heuristics employed.
+
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,biblio}
