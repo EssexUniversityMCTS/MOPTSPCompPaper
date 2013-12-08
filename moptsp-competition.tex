@@ -44,7 +44,7 @@ breakatwhitespace=false,        				% sets if automatic breaks should only
 
 \begin{document}
 
-\title{The 2013 Multi-objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley, Daniel Whitehouse and Peter Cowling are with the Computer Science department of the University of York (email:  \{edward.powley, dw830, peter.cowling\}@york.ac.uk).} \thanks{This work was supported by EPSRC grant EP/H048588/1.}}
+\title{The 2013 Multi-Objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley, Daniel Whitehouse and Peter Cowling are with the Computer Science department of the University of York (email:  \{edward.powley, dw830, peter.cowling\}@york.ac.uk).} \thanks{This work was supported by EPSRC grant EP/H048588/1.}}
 
 \author{Diego Perez, Edward Powley, Daniel Whitehouse, Spyridon Samothrakis, Simon Lucas, Peter Cowling}
 
@@ -53,40 +53,40 @@ breakatwhitespace=false,        				% sets if automatic breaks should only
 \maketitle
 
 \begin{abstract}
-This paper presents the game, framework, rules and results of the Multi-objective Physical Travelling Salesman Problem Competition (MO-PTSP), that was held in the 2013 Conference on Computational Intelligence in Games (CIG). The MO-PTSP Game is a modification of the Travelling Salesman Problem, where the player controls a ship that must visit a series of waypoints in a maze while minimizing three opposing goals: time spent, fuel consumed and damage taken. The rankings of the competition are computed using multi-objective concepts, a novel approach in the field of game artificial intelligence competitions. The winning entry of the contest is also explained in detail. This controller is based on the Monte Carlo Tree Search algorithm, and employed CMA-ES for parameter tuning. 
+This paper presents the game, framework, rules and results of the Multi-objective Physical Travelling Salesman Problem (MO-PTSP) Competition, that was held in the 2013 IEEE Conference on Computational Intelligence in Games (CIG). The MO-PTSP is a real-time game that can be seen as a modification of the Travelling Salesman Problem, where the player controls a ship that must visit a series of waypoints in a maze while minimizing three opposing goals: time spent, fuel consumed and damage taken. The rankings of the competition are computed using multi-objective concepts, a novel approach in the field of game artificial intelligence competitions. The winning entry of the contest is also explained in detail. This controller is based on the Monte Carlo Tree Search algorithm, and employed Covariance Matrix Adaptation Evolution Strategy (CMA-ES) for parameter tuning. 
 \end{abstract}
 
 % no key words
 
 \section{Introduction}
 
-Game competitions have been regularly appearing in artificial intelligence (AI) conferences within the last decade. Apart from being excellent benchmarks for comparing different algorithms in similar scenarios, they are very useful for educational purposes, as many research or graduate students have the opportunity to initiate themselves in the field of artificial intelligence. Assuming these competitions are managed properly, they provide testbeds where participants can test their algorithms in an independent and centralized system (this is, provided by neutral competition organizers), supplying the basis to draw conclusive results.
+Game competitions have regularly appeared in artificial intelligence (AI) conferences within the last decade. Apart from being excellent benchmarks for comparing different algorithms in similar scenarios, they are very useful for educational purposes, as many research or graduate students have the opportunity to initiate themselves in the field of artificial intelligence. Assuming these competitions are managed properly, they provide testbeds where participants can test their algorithms in an independent and centralized system (this is, provided by neutral competition organizers), supplying the basis to draw conclusive results.
 
-Different competitions have populated the conferences in the last years, covering different types of problems by presenting different games to play in. Among many others, some of them have been particularly successful: \textit{Ms. Pacman vs. Ghost} competition~\cite{Philipp2011} allowed participants to take part in the popular game of \textit{PacMan} both as the player and the ghost team, exploring agent coordination in the latter case. The \textit{Starcraft} competition~\cite{Weber2011} tackled problems like unit management and partially observable game states, and the popular \textit{Car Racing Competitions}~\cite{Loiacono2010} have as an important feature dealing with opponents in a race.
+Different competitions have populated conferences in last years, covering distinct types of problems by presenting different games to play in. Among many others, some of them have been particularly successful: \textit{Ms. Pacman vs. Ghost} competition~\cite{Philipp2011} allowed participants to take part in the popular game of \textit{PacMan} both as the player and the ghost team, exploring agent coordination in the latter case. The \textit{Starcraft} competition~\cite{Weber2011} tackled problems like unit management and partially observable game states, and the popular \textit{Car Racing} Competitions~\cite{Loiacono2010} have, as one of their most important features, the player dealing with opponents during the races.
 
-The purpose of the competition presented in this paper is to cover one of the aspects that had not been analyzed before in AI real-time game competitions: multi-objective optimization. The game proposed for the competition requires the optimization of three different objectives, some of them clearly opposing to others. The outcome of the research in this field would not only benefit games like the one proposed here, but also other \textit{single-objective} games where multi-objective approaches could be taken. As an example, real-time strategy games could benefit from such approaches, as agents usually have to deal with simultaneous tasks: attacking/defensive unit production, resource gathering and world exploration. Additionally, this paper introduces a new way of rankings entries in a game competition, by attending to multi-objective concepts such \textit{Pareto fronts} and \textit{dominance}.
+The purpose of the competition presented in this paper is to cover one of the aspects that had not been analyzed before in AI real-time game competitions: multi-objective optimization. The game proposed for the competition requires the optimization of three different objectives, some of them clearly opposing others. The outcome of the research in this field would not only benefit games like the one proposed here, but also other \textit{single-objective} games where multi-objective approaches could also be taken. As an example, real-time strategy games could benefit from such approaches, as agents usually have to deal with simultaneous tasks: attacking/defensive unit production, resource gathering and world exploration. Additionally, this paper introduces a new way of ranking entries in real-time game competitions, by attending to multi-objective concepts such \textit{Pareto fronts} and \textit{Pareto dominance}.
 
-This paper is organized as follows: Section~\ref{sec:moptsp} explains the game used in the competition. Then, Section~\ref{sec:contr} details the game framework and how controllers for this game can be created. Later, Section~\ref{sec:comp} defines the competition, its different tracks and rules, leaving the results of the contest for Section~\ref{sec:res}. Section~\ref{sec:purofmovio} explains the approach taken by the competition winner and, finally, Section~\ref{sec:conc} concludes this paper with a final evaluation of the competition.
+This paper is organized as follows: Section~\ref{sec:moptsp} explains the game used in the competition. Then, Section~\ref{sec:contr} details the game framework and how controllers for this game can be created. Later, Section~\ref{sec:comp} defines the competition, its different tracks and rules. The results of the contest are discussed in Section~\ref{sec:res}. Section~\ref{sec:purofmovio} explains the approach taken by the competition winner and, finally, Section~\ref{sec:conc} concludes this paper with a final evaluation of the competition.
 
 \section{The Multi-objective Travelling Salesman Problem} \label{sec:moptsp}
 
-The Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) is a modification of the Physical Travelling Salesman Problem (PTSP), previously introduced by Perez et al.~\cite{PerezCEC2012} for the WCCI 2012 PTSP Competition. The PTSP is a game where the player controls a ship with the goal of visiting $10$ waypoints scattered around the maze in as little time as possible. MO-PTSP adds two more goals to the game: doing this spending as less fuel as possible and reducing the damage suffered by the ship. This section specifies the main components of the MO-PTSP game, such as the game physics, objectives, rules and maps. 
+The Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) is a modification of the Physical Travelling Salesman Problem (PTSP), previously introduced by Perez et al.~\cite{PerezCEC2012} for the WCCI 2012 PTSP Competition. The PTSP is a game where the player controls a ship with the goal of visiting $10$ waypoints scattered around the maze in as little time as possible. MO-PTSP adds two more goals to the game: the waypoints must be visited while spending as less fuel as possible and reducing the damage suffered by the ship. This section specifies the main components of the MO-PTSP game, such as the game physics, objectives and maps. 
 
-\subsection{Game Physics and the Real-Time Component}
+\subsection{Game Physics and the real-time Component}
 
-Both PTSP and MO-PTSP are games that share some characteristics. One of these similarities is the physics of the ship used by the player to navigate through the game. In both games, the agent controls a ship where two different inputs can be applied: \texttt{steering} and \texttt{throttle}. The first input can be set to \textit{left}, \textit{straight} and \textit{right}, while the throttle input can be \textit{on} or \textit{off}. The combination of these inputs adds up to $6$ different actions that can be provided at a given time. Figure~\ref{fig:ship} depicts the moves available for the ship.
+Both PTSP and MO-PTSP are games that share some characteristics. One of these similarities is the physics of the ship used by the player to navigate through the game. In both games, the agent controls a ship where two different inputs can be applied: \texttt{steering} and \texttt{throttle}. The first input can be set to \textit{left}, \textit{straight} and \textit{right}, while the throttle can be turned \textit{on} or \textit{off}. The combination of these inputs adds up to $6$ different actions (see Figure~\ref{fig:ship}) that can be provided at a given game step (also referred here as \textit{tick}, or \textit{game cycle}). 
 
 \begin{figure} [!h]
 	\begin{center}
-	\includegraphics[scale=0.14]{img/ShipActions}
+	\includegraphics[width=0.8\columnwidth]{img/ShipActions}
 	\caption{Ship inputs and actions.}
 	\label{fig:ship}
 	\end{center}
 \end{figure}
 
-Left and right rotations are performed using a single angle, set to $\pi/60$ radians, and ship speed is set to $0.025$ pixels per time step, values determined by trial an error in order to provide a satisfactory game-play experience. The ship keeps its velocity from a game state to the next, making \textit{inertia} a key aspect to take into account when governing the ship. However, the ship would reach a full stop eventually if no acceleration actions are provided, as there is a loss of speed due to \textit{friction}. This friction is  set to $0.99$ (this is, only $1\%$ of the speed is lost at each step), a value also determined empirically. Finally, there is also a speed gain for actions with throttle on, which is set to $0.025$ pixels per game step. 
+Left and right rotations are performed using a fixed angle, set to $\pi/60$ radians, and the ship acceleration is set to $0.025$ pixels per game step, values determined by trial an error in order to provide a satisfactory game-play experience. The ship keeps its velocity from a game state to the next, making \textit{inertia} a key aspect to take into account when governing the ship. However, the ship would reach a full stop eventually if no acceleration actions are provided, as there is a loss of speed due to \textit{friction}. This friction is  set to $0.99$ (this is, only $1\%$ of the speed is lost at each step), a value also determined empirically. 
 
-The location of the ship in the world can be uniquely determined by three vectors: \textit{position}, that specifies the coordinates of the center of the ship in the maze; \textit{direction}, a vector that indicates where the ship is pointing at (in other words, indicates the direction of a front vector); and \textit{velocity}, that determines the movement of the ship, including its direction and speed. Note that direction and velocity do not need to be aligned. Given an action, this part of state of the ship is modified as shown in Algorithm~\ref{alg:shipUpadte}.
+The location of the ship in the world can be uniquely determined by three vectors: \textit{position}, that specifies the coordinates of the center of the ship in the maze; \textit{direction}, a vector that indicates where the ship is facing to; and \textit{velocity}, that determines the movement of the ship, including its direction and speed. Note that direction and velocity do not need to be aligned. Given an action, this part of state of the ship is modified as shown in Algorithm~\ref{alg:shipUpadte}.
 
 \begin{algorithm}[!h]
 \begin{algorithmic}
@@ -97,7 +97,7 @@ The location of the ship in the world can be uniquely determined by three vector
 	\State $ship.direction.\Call{Rotates}{steering \times steerStep}$
 
 	\If{$throttle == true$}
-		\State $ship.velocity.\Call{Add}{ship.direction \times shipSpeed}$
+		\State $ship.velocity.\Call{Add}{ship.direction \times shipAcc}$
 	\EndIf
 
 	\State $ship.velocity.\Call{Multiply}{frictionLoss}$
@@ -110,48 +110,38 @@ The location of the ship in the world can be uniquely determined by three vector
 \label{alg:shipUpadte}
 \end{algorithm}
 
-The ship can also hit obstacles while it moves within the level, so position and velocity need to be updated differently if the ship's circular bounding collision hits a obstacle in the maze. When this happens, speed is reduced (by a $75\%$ factor) and the velocity vector is modified so the ship bounces off the wall with the appropriated angle. However, the MO-PTSP game introduces a new type of \textit{elastic} obstacle. In the case when the ship hits this kind of obstacle, the reduction of the speed is minor (only $10\%$), so the player can use this type of walls to change direction of travel abruptly without losing too much speed. A third type of obstacle (known as \textit{damaging} obstacle), produces a more important decrease in the speed of the ship, reducing it by a factor of $90\%$.
+The ship can also hit obstacles while it moves within the level, so position and velocity need to be updated differently if the ship's circular bounding collision hits an obstacle in the maze. When this happens, speed is reduced (by a $75\%$ factor) and the velocity vector is modified so the ship bounces off the wall with the appropriate angle. However, the MO-PTSP game introduces a new type of \textit{elastic} obstacle. In the case when the ship hits this kind of obstacle, the reduction of the speed is minor (only $10\%$), so the player can use this type of walls to change direction of travel abruptly losing less speed than only using throttle and steering. A third type of obstacle (known as \textit{damaging} obstacle), produces a more important decrease in the speed of the ship, reducing it by a factor of $90\%$.
 
-Another similarity between PTSP and MO-PTSP is the real-time component of the game: the player (also referred here as the agent, or the controller) must supply an action within a limited budget time, set to $40$ milliseconds. This limitation forces the controller to determine the next move quickly, rewarding those agents that are able to plan faster and explore the action search space in a more efficient manner.
+Another similarity between PTSP and MO-PTSP is the real-time component of the game: the player (also referred here as \textit{agent}, \textit{bot}, or \textit{controller}) must supply an action within a limited budget time, set to $40$ milliseconds. This limitation forces the controller to determine the next move quickly, rewarding those agents that are able to plan faster and explore the action search space in a more efficient manner.
 
 While the PTSP was a bit more permissive, MO-PTSP imposes disqualifications in case this time limit is severely violated. In the original game, a neutral action was applied if the controller took more than $40$ milliseconds to provide an action, but no other consequences were derived from this misbehaviour. The game was then susceptible to cheating, as an agent could employ as long as it needs to plan ahead while the only consequence would be a neutral action in a single game tick. 
 
-MO-PTSP tackles this situation by imposing a second time limit, set to $120$ milliseconds so, in case it is violated, produces the end of the game by disqualifying the player. Although controllers could still potentially spend more than $40$ milliseconds (with the same neutral move performed as a penalization), the risk of being disqualified and the limited gain that could be obtained by these extra milliseconds up to $120$ discouraged participants to performed this trick.
+MO-PTSP tackles this situation by imposing a second time limit, set to $120$ milliseconds. In case this is violated, it causes the end of the game by disqualifying the player. Although controllers could still potentially spend more than $40$ milliseconds (with the same neutral move performed as a penalization), the risk of being disqualified, and the limited gain that could be obtained by the extra milliseconds spent, discourage participants to performed this trick.
 
 \subsection{A Multi-Objective Approach}
 
-The main difference with respect to the original game, the PTSP, can be found in the three different objectives that need to be minimized:
+The main difference with respect to the original game, the PTSP, can be found in the three different objectives that need to be minimized: 1) \textbf{Time}: the player must collect all waypoints scattered around the maze in as less time steps (or game cycles) as possible; 2) \textbf{Fuel}: the fuel consumed at the end of the game must be minimized; and 3) \textbf{Damage}: the ship should end the game with as little damage as possible.
 
-\begin{itemize}
-\item Time: the player must collect all waypoints scattered around the maze in as less time steps (or game cycles) as possible.
-\item Fuel: the fuel consumed at the end of the game must be minimized.
-\item Damage: the ship should end the game with as little damage as possible.
-\end{itemize}
+It is very important to stress that all waypoints must be visited in order to consider a game as successfully finished. Otherwise, a very simple but plausible approach for the player can be not to move at all and hence obtain a good result for the other two objectives (no fuel spent and damage suffered). A time-dependant game over condition is established when the ship does not visit a waypoint once a timer has run off. This timer, initially set to $800$ time steps, is reduced by $1$ at every step if no waypoint is visited, causing the end of the game if it gets to $0$.%\footnote{PTSP also employed this timer, starting at $1000$. Hence, MO-PTSP is slightly more difficult in this sense, as it requires faster controllers.}. 
 
-It is very important to stress that all waypoints must be visited in order to consider a game as successfully finished. Otherwise, a very simple but plausible approach for the player can be not to move at all and hence obtain a good result for the other two objectives (no fuel spent and damage suffered). A time dependant game over condition is established when the ship does not visit a waypoint once a timer has run off. This timer, initially set to $800$ time steps, is reduced by $1$ at every step if no waypoint is visited, causing the end of the game if it gets to $0$\footnote{PTSP also employed this timer, starting at $1000$. Hence, MO-PTSP is slightly more difficult in this sense, as it requires faster controllers.}. 
+The ship starts with an initial fuel amount of $5000$ units, and one unit is spent every time an acceleration action is performed. Four \textit{fuel canisters} are scattered around the maze, each one providing $250$ units of fuel, and visiting a new waypoint also adds $50$ fuel units more to the ship. It is important to mention that it is not mandatory to pick these fuel canisters up in order to complete the game, being their collection up to the strategy of the player. In case the amount of fuel available in the ship gets to $0$, the agent will not be able to use the throttle any more during that game. 
 
-The ship starts with an initial fuel of $5000$ units, and one unit is spent every time an action with the throttle input set to \textit{on} is performed. The player adds, however, $50$ more units to the ship's fuel tank every time a waypoint is visited. Also, four \textit{fuel canisters} are also scattered around the maze, that provide $250$ units of fuel. It is important to mention that it is not mandatory to pick these fuel canisters up in order to complete the game, being their collection up to the strategy of the player. In case the amount of fuel available in the ship gets to $0$, the agent will not be able to use the throttle any more. 
+Regarding the third objective, the ship can be damaged by two different game play elements. First, lava lakes are present in the game levels, dealing $1$ unit of damage for every game step the ship is driving through them. Secondly, the ship also gets damage when colliding with (non-elastic) obstacles, such normal and \textit{damaging} obstacles. The former type of obstacles (normal walls) inflict $10$ units of damage. The latter obstacles, created for this game, produce a more harming effect, dealing $30$ damage units. If the player's damage gets up to $5000$ units, the ship is destroyed and the game is over.
 
-Regarding the third objective, the ship can be damaged by two different game play elements. First, lava lakes are present in the game levels, dealing $1$ unit of damage for every game step the ship is flying over them. Secondly, the ship also gets damage when colliding with (non-elastic) obstacles, such normal and \textit{damaging} obstacles. The former type of obstacles (normal walls, also present in the PTSP game) inflict $10$ units of damage. The latter obstacles, created for this game, produce a more harming effect, dealing $30$ damage units. If the player's damage gets up to $5000$ units, the ship is destroyed and the game is over.
-
-When the ship is damaged by a collision, it enters in an invulnerable state, where no more collision damage can be dealt to the agent (although lava still affects the ship) during $50$ game steps. This avoids situations when too much damage is suffered by the ship if it is touching an obstacle right after colliding with it.
+When the ship is damaged by a collision, it enters in an invulnerable state, where no more collision damage can be dealt to the agent during $50$ game steps. This avoids situations when too much damage is suffered by the ship if it is touching an obstacle right after colliding with it.
 
 \subsection{Game Maps}
 
-Each level for the MO-PTSP game follows a specific format, based on the one that Nathan Sturtevant defined and was employed in several games such as Warcraft, Starcraft or Baldur's Gate. This type of maps have been used by some researchers in the literature before~\footnote{\url{http://movingai.com/benchmarks/dao/}}. The levels are stored in ASCII files, where each character determines the type of object or surface located at that pixel in the map grid. For MO-PTSP, these symbols are detailed next:
+Each level for the MO-PTSP game follows a specific format, employed in several games such as Warcraft, Starcraft or Baldur's Gate, based on the one defined by Nathan Sturtevant. This type of maps have been used by some researchers in the literature before~\footnote{\url{http://movingai.com/benchmarks/dao/}}. The levels are stored in ASCII files, where each character determines the type of object or surface located at that pixel in the map grid. 
 
-\begin{itemize}
-\item Obstacles are represented by the characters 'T', 'D' and 'L', to be used to create normal, damaging and elastic obstacles respectively.
-\item Normal surfaces use the character '.', while lava lakes employ ':'.
-\item Waypoints and fuel canisters are indicated with 'C' and 'F' respectively.
-\item The player's ship is represented by the character 'S'.
-\end{itemize}
+For MO-PTSP, obstacles are represented by the characters 'T', 'D' and 'L', to be used to create normal, damaging and elastic obstacles respectively. Normal surfaces use the character '.', while lava lakes employ ':'. Waypoints and fuel canisters are indicated with 'C' and 'F' respectively, and the player's ship is represented by the character 'S'.
 
-Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn by the framework. Not visited waypoints are depicted as (filled) blue circles, while the already visited ones are shown as empty circles. Green ellipsis are used for the fuel canisters. Normal surface is brown, whereas lava is a red-dotted yellow surface. Elastic collisions are blue, normal collisions black and damaging collisions are drawn in red. The ship is drawn as a dark blue polygon, with a green triangle at the back denoting thrust being used. The trajectory followed by the ship is drawn with a black line.
+
+Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn by the framework. Not visited waypoints are depicted as (filled) blue circles, while the already visited ones are shown as empty circles. Green ellipsis are used for the fuel canisters,  normal surface is of brown colour, whereas lava is a red-dotted yellow surface. Elastic collisions are blue, normal collisions black and damaging collisions are drawn in red. The ship is drawn as a dark blue polygon, with a green triangle at the back when thrust is being used. The trajectory followed by the ship is drawn with a black line.
 
 \begin{figure} [!h]
 	\begin{center}
-	\includegraphics[scale=0.5]{img/sampleMap}
+	\includegraphics[width=0.7\columnwidth]{img/sampleMap}
 	\caption{Sample MO-PTSP map.}
 	\label{fig:sampleMap}
 	\end{center}
@@ -166,33 +156,28 @@ Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn 
 The MO-PTSP framework code can be downloaded from the competition webpage~\footnote{\url{http://www.ptsp-game.net/}}. The framework, under the name of \textit{Starter Kit}, contains the code, documentation, and 10 maps to test the controllers in. The software is written in Java, and it is organised in the following packages:
 
 \begin{itemize}
-\item Package \code{controllers}: this is the package where users can create controllers in. The framework already contains several sample controllers to help participants develop their own. Sample controllers are explained, and their performance studied, in section~\ref{ssec:sample}.
-\item Package \code{framework}: it contains the main code of the game, and it is divided into several sub-packages:
-\begin{itemize}
-\item \code{core}: game entities, such as waypoints, fuel canisters, ship, etc. can be found in this package.
-\item \code{graph}: this sub-package contains the code for a simple pathfinding tool, that can be used to calculate the shortest paths between any pair of points in the map (see Section~\ref{ssec:cont} for more details).
-\item \code{utils}: several classes, useful for the framework such as 2D vectors and visual frames are included here.
-\end{itemize}
+\item Package \code{controllers}: this package contains game bots. The framework also includes several sample controllers to help participants develop their own. Sample controllers are explained in Section~\ref{ssec:sample}.
+\item Package \code{framework}: it contains the main code of the game, and it is divided into several sub-packages: \code{core} package takes care of the logic of game entities, such as waypoints, fuel canisters, ship, etc. \code{graph}: contains the code for a simple pathfinding tool, that can be used to calculate the shortest path between any pair of points in the map (see Section~\ref{ssec:cont} for more details). Finally, \code{utils} includes several useful classes for the framework, such as 2D vectors and visual frames.
 \item Package \code{wox.serial}: this package contains a sample controller that uses the last version of the Wox Serializer~\footnote{\url{woxserializer.sourceforge.net}}. This is a useful implementation for controllers that use some kind of offline training, such evolutionary algorithms.
 \end{itemize}
 
 Additionally, the package \code{framework} contains three Java classes that allow the execution of the game:
 
 \begin{itemize}
-\item \code{ExecSync.java}: this is the main entry point of the framework. It allows the execution of the software in three different ways: running a controller in a given map, running it $m$ times in $n$ different maps, and starting the human player mode, where the game is played using the keyboard.
-\item \code{ExecFromData.java}: allows the execution of the game in a map that has been initialized through data structures, instead of being read from a file. This mode can be employed for executions of large amount of consecutive runs, useful for reinforcement learning or evolutionary algorithms.
+\item \code{ExecSync.java}: this class allows the execution of the software in three different ways: running a controller in a given map, running it $m$ times in $n$ different maps, and starting the human player mode, where the game is played using the keyboard.
+\item \code{ExecFromData.java}: allows the execution of the game in a map initialized through data structures, instead of being read from a file. This mode can be used to execute large number of consecutive runs, useful for reinforcement learning or evolutionary algorithms.
 \item \code{ExecReplay.java}: every game played with the framework can have the actions performed by the controller saved into a file. This execution mode allows to replay a game previously saved from one of these files.
 \end{itemize}
 
 \subsection{Game flow}
 
-In order to create a controller in this framework, a new class must be created that inherits from the base class \code{framework.core.Controller}. This class contains one abstract method which contains must be implemented: 
+In order to create a controller in this framework, a new class must be created inheriting from the base class \code{framework.core.Controller}. This class contains one abstract method which contains must be implemented: 
 
 \begin{center}
 \code{int getAction(Game, long);}
 \end{center}
 
-This method receives a copy of the current game state and a variable indicating when the controller is due to return with an action to execute. When the call to this method is done, this timer will be set to $40$ milliseconds later in time. The value returned by this method should be one of the following values, from \code{framework.core.Controller}, corresponding to the six actions available in the game:
+This method receives a copy of the current game state and a variable indicating when the controller is due to return an action to execute. When this method is called, this timer is set to $40$ milliseconds beyond that instant. The value returned by this method should be one of the following $6$ action values, from \code{framework.core.Controller}:
 
 \begin{itemize}
 \item \code{ACTION_NO_FRONT}: Throttle off, no steering.
@@ -205,16 +190,16 @@ This method receives a copy of the current game state and a variable indicating 
 
 Apart from this method, every controller must implement a \code{public} constructor that receives the same two parameters: a game instance, with the initial state, and a time due. This constructor will be called just before the game starts, and allows the controller to initialize its own data structures and perform some initial planning. The budget time for the constructor of the controller is $1$ second, and the game will be over if this time is violated.
 
-Hence, the game flow of MO-PTSP is simple: the framework creates the game, calculates the initialization due time ($1$ second from that instant) and class the controller's constructor to create the agent's object. If the constructor takes more time than the allowed, it is disqualified for this game. Then, until the game is over, the framework calls the function \code{getAction} to retrieve the next move to execute, providing the current game state and the time due for the calculation ($40$ seconds after the \code{getAction} call). In case this function takes more than $40$ milliseconds, the neutral action (\code{ACTION_NO_FRONT}) is executed. If the call took more than $120$ milliseconds, the game is over and the controller is disqualified for the game.
+Hence, the game flow of MO-PTSP is simple: the framework creates the game, calculates the initialization due time ($1$ second beyond that instant) and calls the controller's constructor to create the player. If the constructor takes more time than the allowed, it is disqualified from this game. Then, until the game is over, the framework calls the function \code{getAction} to retrieve the next move to execute, providing the current game state and the time due for the calculation ($40$ seconds after the \code{getAction} call). In case this function takes more than $40$ milliseconds, the neutral action (\code{ACTION_NO_FRONT}) is executed. If the call took more than $120$ milliseconds, the game is over and the controller is disqualified for the game.
 
-When the game is over, all actions executed by the agent can be dumped into a file. The format of this file will be the total amount of moves made, followed by each action returned, one per line.
+%When the game is over, all actions executed by the agent can be dumped into a file. The format of this file will be the total amount of moves made, followed by each action returned, one per line.
 
 \subsection{Game Interface} \label{ssec:cont}
 
 Controllers can access information about the current state of the game using several functions available in the \code{Game} class. Agents can query the game about:
 
 \begin{itemize}
-\item Waypoints: location of the waypoints (both visited and yet to be collected), number of waypoints collected and how many are left to be visited.
+\item Waypoints: location of the waypoints (both visited and yet to be collected), number of waypoints visited and how many are left.
 \item Time: number of time steps since the beginning of the game, number of steps left to visit another waypoint.
 \item Fuel: remaining fuel in the ship.
 \item Damage: damage suffered so far in the game.
@@ -223,66 +208,55 @@ Controllers can access information about the current state of the game using sev
 \item If the game is over or not.
 \end{itemize}
 
-A very important function that \code{Game} exposes to the controller is \code{tick(int action)}. This method advances the game state by applying the action indicated as a parameter. By using this function, the agent can foresee the effects in the game of the actions performed, allowing to perform planning in a closed loop manner. 
+A very important function that \code{Game} exposes to the controller is \code{tick(int action)}. This method advances the game state by applying the action indicated as a parameter. By using this function, the agent can foresee the effects in the game of the actions performed, allowing to perform planning in a closed loop manner. It is important to highlight that MO-PTSP is a deterministic game (in other words, one can be certain that applying a move \textit{a} in the game state \textit{s} will always advance to the same next state).
 
-The framework also comes with a simple implementation of path-finding using the A* algorithm. A 8-way connected graph is created in the navigable parts of the map, given a certain granularity (separation between the graph's nodes). This graph is only created if the agents wants to use it, so the computational time it takes is not detrimental to those participants who do not want to use it, or prefer to work on a more sophisticated/efficient path-finding implementation for the game.
+The framework also comes with a simple implementation of a path-finding algorithm that uses A*. This tool can be employed by the agent to obtain paths between every pair of positions in the maze. Only if the participant decides to use it for the controller, a 8-way connected graph is created in the navigable parts of the map with a certain granularity (separation between graph's nodes). The computational time this takes is not detrimental to those participants who prefer not to make use of it, or instead rather to work on a more sophisticated or efficient path-finding implementation.
 
 \subsection{Sample Controllers} \label{ssec:sample} 
 
-The MO-PTSP framework contains several sample bots in order to ease the creation of controllers for the game. In a gradual complexity, these samples show how to operate with the different methods and libraries that the framework includes.
+The MO-PTSP framework contains several sample bots in order to ease the creation of controllers for the game. In a gradual complexity, these samples show how to operate with the different methods and libraries from the framework.
 
 The simplest sample controllers are \textit{RandomController} and \textit{WoxController}, both of them executing actions at random, with the peculiarity that the latter one shows how to operate with the Wox library (as mentioned in Section~\ref{ssec:software}).
 
 This random behaviour is enhanced in \textit{LineOfSightController}, that navigates towards a certain destination when a waypoint or fuel canister is in line of sight with the ship. The sample \textit{GreedyController} takes care of the waypoints and canisters that are not visible to the ship by means of the pathfinding library included in the framework.
 
-The most complex sample controller is \textit{MacroRSController}. This bot makes use of macro-actions (or repetitions of the same action), a concept exploited in the previous PTSP competition by the winner and other entries. The idea is simple: instead of applying the decided move to make in just one game step, it is performed in the next $n$ cycles. This way, the algorithm is able to employ the next $n$ game steps to decide the next sequence of moves to make, increasing the budget time to $40ms \times n$. A stochastic hill climber algorithm is used to search for the actions to apply in the next move.
+The most complex sample controller is \textit{MacroRSController}. This bot makes use of macro-actions (or repetitions of the same action), a concept exploited in the previous PTSP competition by the winner and other entries. The idea is simple: instead of applying the decided move in just one game step, it is performed in the next $n$ cycles. This way, the algorithm is able to employ the next $n$ game steps to decide the next sequence of moves to make, increasing the budget time to $40ms \times n$. A stochastic hill climber algorithm is used to search for the actions to apply in the next move.
 
 \section{The MO-PTSP Competition} \label{sec:comp}
 
-\subsection{Controllers for the competition}
+\subsection{Valid controllers for the competition}
 
-The controllers submitted for the competition must run in the framework provided within the \textit{Starter Kit} and, in order to be a valid controller, the following characteristics must be observed:
+The controllers submitted for the competition must run in the framework provided within the \textit{Starter Kit} and, in order to be a valid controller, the following characteristics must be observed: reading from files during execution is allowed, although writing is only possible in the controller's own directory. Multi-threading is not allowed and the process that runs the agent must not use more than 256MB of memory.
 
-\begin{itemize}
-\item Multi-threading is not allowed.
-\item During execution, it is possible to read from files, although writing is only allowed if this is done in the controller's own directory.
-\item The process that runs the agent must not use more than 256MB of memory.
-\item It must be written in Java. Participants must submit the source code in a zipped file, and the competition server will unzip, compile and run the controller in the appropriate set of maps. The controller must be submitted before the competition deadline, and a short description of the technique employed is expected.
-\end{itemize}
+The controller must be written in Java. Participants must submit the source code in a zipped file, and the competition server will unzip, compile and run the controller in the appropriate set of maps. The controller must be submitted before the competition deadline, and a short description of the technique employed is expected.
 
 
 \subsection{Ranking entries}
 
-One of the main challenges of a multi-objective competition is to evaluate and rank entries according to its performance. In a single objective scenario, this is straightforward: if the objective of the game is to maximize a score, or minimize completion time (like in the original PTSP), the best result will be the one with the maximum or minimum value measured.
+One of the main challenges of a multi-objective competition is to evaluate and rank entries according to its performance. In a single objective scenario, this is straightforward: if the objective of the game is to maximize a score, or minimize completion time (like in the original PTSP), the best result will be the one with the maximum or minimum value that is measured.
 
-However, multi-objective games pose the problem of evaluating objectives that could be in conflict (and are in this particular case). A clear example is the opposed objectives of time and fuel: minimizing completion time would naturally be achieved with a higher speed, which is done by pressing the throttle more often and therefore spending more fuel. In a similar way, very fast controllers  would usually follow straight line distances, but this will most of the time make the ship drive through lava lakes, increasing the damage taken.
+However, multi-objective games pose the problem of evaluating objectives in conflict (as they are in this particular case) as happens, for instance, with time and fuel: minimizing completion time would naturally be achieved with a higher speed, which is done by pressing the throttle more often and therefore spending more fuel. In a similar way, very fast controllers  would usually follow straight line distances, but this will make the ship drive through lava lakes most of the time, increasing the damage taken.
 
-The competition states that none of these objectives should be preferred over the others. In other words, all these three objectives must be optimized simultaneously. In order to evaluate entries that run in a single map, the competition uses concepts borrowed from \textit{Pareto optimality}. Given a single map, where $n$ results from different competitors have been obtained, the entries are ranked in \textit{Pareto fronts}.
+The competition states that none of these objectives should be preferred to the others. In other words, all these three objectives must be optimized simultaneously. In order to evaluate entries that run in a single map, the competition follows multi-objective optimization concepts. 
 
-A MO-PTSP solution can be seen as a triplet $S = <T, F, D>$, where $T$ is the time taken to complete the game, $F$ is the fuel spent and $D$ is the damage taken by the ship at the end of the run. Applying concepts of Multi-Objective optimization, it is said that a solution $S_1$ \textit{dominates} another solution $S_2$ (and it is written $S_1 \preceq S_2$) if:
+Given a single map, where $n$ results from different competitors have been obtained, the entries are ranked in \textit{Pareto fronts}. A MO-PTSP result can be seen as a triplet $R: (T, F, D)$, where $T$ is the time taken to complete the game, $F$ is the fuel spent and $D$ is the damage taken by the ship at the end of the run. Applying concepts of Multi-Objective optimization, it is said that a result $R_1$ \textit{dominates} another result $R_2$ (and it is written $R_1 \preceq R_2$) if:
 
 \begin{enumerate}
-\item $S_1$ is no worse than $S_2$ in all three objectives.
-\item At least one objective in $S_1$ is strictly better than its analogous counterpart in $S_2$.
+\item $R_1$ is no worse than $R_2$ in all objectives.
+\item At least one objective in $R_1$ is strictly better than its analogous counterpart in $R_2$.
 \end{enumerate}
 
-Dominance provides a partial order in the solutions provided. However, there are some cases where it is not possible to say that $S_1$ dominates $S_2$ or vice versa (an example in MO-PTSP would be when $S_1$ is better in the time objective, but $S_2$ spends a smaller amount of fuel than $S_1$). When this happens, it is said that these two solutions belong to the same Pareto front. If there is no solution found that dominates a given solution $S$, then $S$ belongs to the \textit{optimal Pareto front}.
+Dominance establishes a partial order in the results provided. However, there are some cases where it is not possible to say that $R_1$ dominates $R_2$ or vice versa (an example in MO-PTSP would be when $R_1$ is better in the time objective, but $R_2$ spends a smaller amount of fuel than $R_1$). When this happens, it is said that these two results belong to the same Pareto front. If there is no result found that dominates a given result $R$, then $R$ belongs to the \textit{optimal Pareto front}. Thus, it is possible to rank all results in different Pareto fronts, and there will always be an optimal front. There will be no results better than those allocated to the optimal front. 
 
-Thus, it is possible to rank all entries in a single map in different Pareto fronts, and there will always be an optimal front with results no better than those allocated to that front. Once the results have been sorted in fronts, points are given to the entries using the following scheme:
+Once the results have been sorted in fronts, points are given to the entries using the following scheme: controllers with no results in the optimal front receive $0$ points in this map. $1$ point is awarded to each entry that was able to obtain a result that is included in the optimal Pareto front. Finally, the best results for each objective in this map are tracked, and points are awarded to those entries that achieved these records. $2$, $9$ and $24$ additional points are awarded to the entries that obtained respectively $1$, $2$ and $3$ records in a map.
 
-\begin{itemize}
-\item Only the entries that placed a result in the optimal Pareto front are awarded with points. All other results obtain $0$ points in this map.
-\item $1$ point is awarded to the entry that was able to place a result in the optimal Pareto front.
-\item The best result for each objective is tracked, and points are awarded to the entries that achieved these records. $2$, $9$ and $24$ additional points are awarded to the entries that obtained respectively $1$, $2$ and $3$ records in a single execution in a map.
-\end{itemize}
+This scheme of points rewards those entries that dominate clearly other contestants. For instance, if a result is better than all others in all objectives, it will be the only member of the optimal Pareto front, receiving a total of $25$ ($24 + 1$) points in that map, as it obtained the best results in all objectives.
 
-This scheme of points rewards those entries that dominate clearly other contestants. For instance, if one result is better than all others in all objectives, it will be the only member of the optimal Pareto front and it would receive a total of $25$ ($24 + 1$) points in that map, as it obtained the best result in all objectives.
-
-A more common scenario is shown in Table~\ref{tab:rankingSample}, taken from the final rankings of the competition in one of the starter kit maps. The first three entries receive $1$ point as they are in the optimal pareto front, whereas the last two (dominated by at least one of the first three entries) receive no points. The first one obtains the best result in time and damage, so it gets $9$ extra points. The second entry gets the best result in fuel, being rewarded with extra $2$ points. Finally, the third entry only receives $1$ point as it doesn't achieve any record in this map, but it is still in the optimal front because no other entry dominates it.
+A more common scenario is shown in Table~\ref{tab:rankingSample}, taken from the final rankings of the competition in one of the starter kit maps. The first three entries receive $1$ point as they are in the optimal pareto front, whereas the last two (dominated by at least one of the first three entries) receive no points. The first one obtains the best result in time and damage, so it gets $9$ extra points. The second entry gets the best result in fuel, being rewarded with $2$ extra points. Finally, the third entry only receives $1$ point as it does not achieve any record in this map, but it is still in the optimal front because no other entry dominates it.
 
 \begin{table}[!t]
 \begin{center}
-\begin{tabular}{|>{\centering\arraybackslash}m{1.25cm}|>{\centering\arraybackslash}m{1.15cm}|c|c|>{\centering\arraybackslash}m{0.9cm}|>{\centering\arraybackslash}m{1.5cm}|}
+\begin{tabular}{|>{\centering\arraybackslash}m{1.25cm}|>{\centering\arraybackslash}m{1.15cm}|>{\centering\arraybackslash}m{0.5cm}|>{\centering\arraybackslash}m{0.5cm}|>{\centering\arraybackslash}m{0.9cm}|>{\centering\arraybackslash}m{1.5cm}|}
 \hline
  \textbf{User} & \textbf{Waypoints} & \textbf{Time} & \textbf{Fuel} & \textbf{Damage} & \textbf{Points} \\ 
 \hline
@@ -303,24 +277,22 @@ Weijia & $10$ & $1809$ & $590$ & $485$ & $0$\\
 \end{center}
 \end{table}
 
-Another important aspect to determine is how many runs a controller performs in a given map. On one hand, only a single run (also referred here as a \textit{match}) would penalize those unlucky cases where the controller behaved poorly, or even did not visit all waypoints. On the other hand, running several matches and calculating the average for each objective would provide misleading results (a controller could try to optimize only one objective per run, and the average would show results that do not match with the real behaviour in a single match).
-
-The approach taken in this competition is the following. Each controller is allowed to run a maximum of $5$ times on each map, but the evaluation stops as soon as one match visits all waypoints. Then, the result of that particular run is used to rank the entry.
+Another important aspect to determine is how many runs a controller performs in a given map. On one hand, only a single run (also referred here as a \textit{match}) would penalize potential unlucky cases where the controller behaved poorly, or even did not visit all waypoints. On the other hand, running several matches and calculating the average for each objective would provide misleading results (a bot could try to optimize only one objective per run, and the average would show results that do not match with the real behaviour of the controller in a single match). The competition takes the following approach: each controller is allowed to run a maximum of $5$ times on each map, but the evaluation stops as soon as all waypoints are visited in one match. Then, the result of that particular run is used to rank the entry.
 
 Finally, when a controller is evaluated in a set of $n$ maps, the final score is the sum of the points awarded on each one of these levels. To compute the rankings in a set of maps, the entries are sorted according to this total amount of points, and the one with the highest score is declared the winner.
 	
 	
 \subsection{Competition Tracks}
 
-The MO-PTSP Competition is composed of three different tracks, all of them running in parallel.
+The MO-PTSP Competition is formed by three tracks.
 
-\subsubsection{Bot Competition Track} This track evaluates controllers (bots) submitted to the competition. Before the deadline of the competition, some preliminary rankings are computed in the contest server. Every time a participant submits a controller, it is evaluated on a set of $20$ maps, and the rankings of this set are automatically updated in the website. This allows participants to compare between themselves, and get a feeling about how well their controllers would perform for the final rankings.
+\subsubsection{Bot Competition Track} This track evaluates bots submitted to the competition. Before the deadline of the competition, some preliminary rankings are computed in the contest server. Every time a participant submits a controller, it is evaluated on a set of $20$ maps, and the rankings of this set are automatically updated in the website. This allows participants to compare between themselves, and get a feeling about how well their controllers would perform for the final rankings.
 
 The set of maps is renewed every few weeks, in order to avoid the controllers to overfit to any particular set. All these maps are taken from a pool of unknown maps, that does not include the levels from the starter kit. The final evaluation, after the deadline of the competition, is run in a new set of maps, where some are taken from the previous sets and others are completely new to the participants.
 
-\subsubsection{Human Competition Track} The website allows players to register and play ``as humans'' the $10$ games from the framework starter kit in an applet. These games are saved and rankings are drawn to determine the best MO-PTSP human player.
+\subsubsection{Human Competition Track} The website allows users to play ``as humans'' the $10$ games from the framework starter kit in an applet. The results are saved and rankings are drawn to determine the best MO-PTSP human player.
 
-\subsubsection{Human vs. Bot Competition Track} Every time a controller is submitted to the bot competition track, it is also executed in the starter kit maps. Then, a separated ranking is calculated between the results obtained by the bots and the humans in these maps, allowing a direct comparison between bots and humans in the MO-PTSP game.
+\subsubsection{Human vs. Bot Competition Track} Every time a controller is submitted to the bot competition track, it is also executed in the starter kit maps. Then, a ranking is calculated between the results obtained by bots and humans in these maps, allowing a direct comparison between the two.
 
 \section{Results of the competition} \label{sec:res}
 
@@ -380,11 +352,11 @@ $8$&LordOkami&Human&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$0$&$1$&\textbf{1}\\
 	\label{tab:res2}
 \end{table*}
 
-Tables~\ref{tab:res1} and~\ref{tab:res2} summarize the results of the bot and human versus bot competition tracks respectively. As can be seen, the winner of both editions is the same controller, \textsc{PurofMovio}, that is described in detail in Section~\ref{sec:purofmovio}.
+Tables~\ref{tab:res1} and~\ref{tab:res2} summarize the results of the bot and human versus bot competition tracks respectively. As can be seen, the winner of both editions is the same controller, \textsc{PurofMovio}, that is described in detail in Section~\ref{sec:purofmovio}. The full rankings, detailing each one of the matches played, can be seen in the competition website.
 
 In the bot track, the winner achieves $305$ points, out of a maximum of $500$. The distance with the second ranked bot, \textsc{Weijia}, is very significant. Although the first two entries are based on MCTS, the approaches are different: while the winner analyzed the quality of a given game state by a weighted sum of features, the second one incorporated multi-objective measurements in the MCTS algorithm~\cite{Wang13}. It is important to notice that the winner entry dominates in all objectives in $7$ maps, while is better in two objectives in the other $13$ levels.
 
-Regarding the humans versus bot track, \textsc{PurofMovio} was able to beat the winner of the human track (here the second best entry: \textsc{mmorenosi}). Although the victory is clear, in this case the points are more distributed among the first $8$ ranked players in this track. A total of $13$ human players participated in both the human and the human versus bot tracks.
+Regarding the humans versus bot track, \textsc{PurofMovio} was able to beat the winner of the human track (here the second best entry: \textsc{mmorenosi}). Although the victory is clear, in this case points are more distributed among the first $8$ ranked players. A total of $13$ human players participated in both the human and the human versus bot tracks.
 
 \section{The winning entry} \label{sec:purofmovio}
 
@@ -408,7 +380,7 @@ An example of a distance map is shown in Figure~\ref{fig:distance-map-weighted}.
 
 \begin{figure}%
 \begin{center}
-	\includegraphics[width=0.8\columnwidth]{img/distance-map-weighted.png}%
+	\includegraphics[width=0.7\columnwidth]{img/distance-map-weighted.png}%
 \end{center}
 \caption{An example of a distance map with a lava weighting of $\gamma = 1$. The contour lines correspond to distances a multiple of $25$ pixels from the origin (shown as a dot).}%
 \label{fig:distance-map-weighted}%
@@ -418,7 +390,7 @@ An example of a distance map is shown in Figure~\ref{fig:distance-map-weighted}.
 Also during controller initialisation, the order in which to visit the waypoints is determined.
 Fuel tanks are also included as ``optional'' waypoints.
 The route planner uses classical TSP methods, namely the multiple fragment heuristic~\cite{Bentley1990} and 3-opt local search with first improvement~\cite{Lin1965,Johnson1997}.
-The edge weights in the TSP graph are the shortest-path distances calculated by the distance mapper.
+The edge weights in the TSP graph are the shortest-path distances given by the distance mapper.
 
 3-opt is a hill-climbing algorithm.
 Starting from an initial path,
@@ -445,16 +417,18 @@ but is a worthwhile tradeoff.
 
 The second modification deals with the length of the game,
 which even with macro-actions can result in a decision tree several hundred plies deep.
-We impose a fixed horizon on MCTS. After $d$ plies,
+A fixed horizon on MCTS is imposed. After $d$ plies,
 all states are treated as terminal: children are not expanded, simulations are halted.
 The resulting nonterminal state is evaluated by a heuristic evaluation function.
 The most crucial terms in the evaluation function are the number of waypoints collected so far, and the distance from the ship to the next waypoint in the route.
 There are also evaluation terms for fuel and damage, with tunable parameters to control the emphasis placed on these objectives.
 
 \begin{figure}%
-\includegraphics[width=\columnwidth]{img/local-optimum.pdf}%
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{img/local-optimum.pdf}%
 \caption{Illustration of a low quality local optimum in a simplified \mbox{$1$-dimensional} version of MO-PTSP.}%
 \label{fig:local-optimum}%
+\end{center}
 \end{figure}
 
 The controller may sometimes become trapped in a local optimum,
@@ -463,17 +437,17 @@ An example of this is shown in Figure~\ref{fig:local-optimum}.
 The fitness function gives a reward for approaching the next waypoint but a penalty for damage incurred by driving through lava.
 The playout length is insufficient for the search to determine that driving through the lava eventually leads to the next waypoint and thus a higher fitness,
 so the controller instead decides to sit at the edge of the lava until the game times out.
-We introduced a mechanism called \emph{panic mode} to deal with this:
+A mechanism called \emph{panic mode} is introduced to deal with this:
 if it is detected that MCTS is failing to find lines of play that make progress towards the goal,
 the search switches to an alternative evaluation function which more aggressively guides the controller towards the next waypoint (ignoring fuel and damage).
 The original evaluation takes over again once the controller is unstuck from the local optimum.
-We found that panic mode has a limited impact on the time, fuel and damage scores of the controller,
+Panic mode was found to have a limited impact on the time, fuel and damage scores of the controller,
 but improves its ability to collect all waypoints without timing out.
 
 \subsection{Parameter tuning}
 
 \textsc{PurofMovio} has $18$ tunable parameters in total.
-We found hand-tuning of the parameters to be challenging:
+Hand-tuning of parameters is challenging:
 small changes in parameter values can have large and unpredictable effects on the behaviour of the controller,
 and the randomised nature of MCTS makes it difficult to assess whether an observed change in behaviour is due to a recent parameter change
 or simply a lucky or unlucky run.
@@ -494,10 +468,10 @@ individuals on the Pareto front receive rank~$1$ and are removed;
 from what remains of the population, individuals on the new Pareto front receive rank~$2$ and are removed;
 and so on until the population is exhausted.
 Within each rank, the individuals are sorted by the sum of time, fuel and damage, with equal weights.
-Igel et al~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but due to time constraints we chose not to implement these.
+Igel et al~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but due to time constraints these were not implemented.
 
 Results of parameter tuning are presented in~\cite{Powley2013_moptsp}.
-We ran the parameter tuning three times, obtaining three different sets of parameters.
+Parameter tuning was run three times, obtaining three different sets of parameters.
 The three tuned controllers outperform our best efforts at hand-tuning,
 but make slightly different tradeoffs between the three objectives:
 for example the third set performs worse on time than the other two, but uses significantly less fuel.
@@ -510,11 +484,11 @@ and this implementation was used to tune the parameters for \textsc{PurofMovio}.
 
 \section{Conclusions} \label{sec:conc}
 
-This paper described the Multi-objective Physical Travelling Salesman Problem (MO-PTSP) game and competition, detailing rules, tracks ranking scheme and results. It also analyzed the winning entry of the competition, a Monte Carlo Tree Search (MCTS) algorithm with an heuristic tuned by the CMA-ES algorithm.  
+This paper describes the Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) game and competition, detailing rules, tracks, rankings scheme and results. It also analyzed the winning entry of the competition, a Monte Carlo Tree Search algorithm with an heuristic tuned by CMA-ES.  
 
-The multi-objective rankings seem to reflect accurately the quality of the solutions, as the winner's approach performance is much higher than that of its competitors. Additionally, it is worthwhile to mention that, in contrast with single-objective rankings, the introduction of new results can change the pareto front that each controller belongs to (as in the introduction of a new result that dominates all others), producing an important change in the points awarded to each entry.
+The multi-objective rankings scheme reflect accurately the quality of the solutions, as the winner's approach performance is much higher than the one of its competitors. It is also worthwhile mentioning that, in contrast with single-objective rankings, the addition of even a single new result can change importantly the existing Pareto fronts (i.e a new result that dominates all others), causing an important change in the points awarded to each entry.
 
-The competition attracted entries that employed different techniques, although most of them were variants of MCTS, a technique that has shown its proficiency in a wide range of problems in the literature and also in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the one proposed by Weijia et al.~\cite{Wang13}. Finally, the winner entry showed the benefits of MCTS as a real-time action decision algorithm, the importance of dividing long term and short term planning (waypoints route against navigation), how coarsening the action space using macro-actions is beneficial for real-time games and the usage of an evolutionary approach to tune the parameters of the heuristics employed.
+The competition attracted controllers that employed different techniques, although most of them were variants of MCTS, a technique that has shown its proficiency in a wide range of problems in the literature and also in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the one proposed by Weijia et al.~\cite{Wang13}. Finally, the winner entry showed the benefits of MCTS as a real-time action decision algorithm, the importance of dividing long term and short term planning (waypoints route against navigation), how coarsening the action space using macro-actions is beneficial for real-time games, and the usage of an evolutionary approach to tune the parameters of the heuristics employed.
 
 
 \bibliographystyle{IEEEtran}
