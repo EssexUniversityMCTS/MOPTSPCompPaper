@@ -86,7 +86,7 @@ Both PTSP and MO-PTSP are games that share some characteristics. One of these si
 
 Left and right rotations are performed using a fixed angle, set to $\pi/60$ radians, and the ship acceleration is set to $0.025$ pixels per game step squared, values determined by trial an error in order to provide a satisfactory game-play experience. The ship keeps its velocity from a game state to the next, making \textit{inertia} a key aspect to take into account when governing the ship. However, the ship would reach a full stop eventually if no acceleration actions are provided, as there is a loss of speed due to \textit{friction}. This friction is  set to $0.99$ (this is, only $1\%$ of the speed is lost at each step), a value also determined empirically. 
 
-The location of the ship in the world can be uniquely determined by three vectors: \textit{position}, that specifies the coordinates of the center of the ship in the maze; \textit{direction}, a vector that indicates where the ship is facing to; and \textit{velocity}, that determines the movement of the ship, including its direction and speed. Note that direction and velocity do not need to be aligned. Given an action, this part of state of the ship is modified as shown in Algorithm~\ref{alg:shipUpadte}.
+The location of the ship in the world can be uniquely determined by three vectors: \textit{position}, that specifies the coordinates of the center of the ship in the maze; \textit{direction}, a vector that indicates where the ship is facing to; and \textit{velocity}, that determines the movement of the ship, including its direction and speed. Note that direction and velocity do not need to be aligned, which in practical terms means the ship could be facing one direction and moving towards another. Given an action, this part of state of the ship is modified as shown in Algorithm~\ref{alg:shipUpadte}.
 
 \begin{algorithm}[!h]
 \begin{algorithmic}
@@ -235,11 +235,9 @@ The controller must be written in Java. Participants must submit the source code
 
 One of the main challenges of a multi-objective competition is to evaluate and rank entries according to its performance. In a single objective scenario, this is straightforward: if the objective of the game is to maximize a score, or minimize completion time (like in the original PTSP), the best result will be the one with the maximum or minimum value that is measured.
 
-However, multi-objective games pose the problem of evaluating objectives in conflict (as they are in this particular case) as happens, for instance, with time and fuel: minimizing completion time would naturally be achieved with a higher speed, which is done by pressing the throttle more often and therefore spending more fuel. In a similar way, very fast controllers  would usually follow straight line distances, but this will make the ship drive through lava lakes most of the time, increasing the damage taken.
+However, multi-objective games pose the problem of evaluating objectives in conflict (as they are in this particular case), as happens, for instance, with time and fuel: minimizing completion time would naturally be achieved with a higher speed, which is done by pressing the throttle more often and therefore spending more fuel. In a similar way, very fast controllers  would usually follow straight line distances, but this will make the ship drive through lava lakes most of the time, increasing the damage taken.
 
-The competition states that none of these objectives should be preferred to the others. In other words, all these three objectives must be optimized simultaneously. In order to evaluate entries that run in a single map, the competition follows multi-objective optimization concepts. 
-
-Given a single map, where $n$ results from different competitors have been obtained, the entries are ranked in \textit{Pareto fronts}. A MO-PTSP result can be seen as a triplet $R: (T, F, D)$, where $T$ is the time taken to complete the game, $F$ is the fuel spent and $D$ is the damage taken by the ship at the end of the run. Applying concepts of Multi-Objective optimization, it is said that a result $R_1$ \textit{dominates} another result $R_2$ (and it is written $R_1 \preceq R_2$) if:
+The competition states that none of these objectives should be preferred to the others. In other words, all these three objectives must be optimized simultaneously. Given a single map, where $n$ results from different competitors have been obtained, the entries are ranked in \textit{Pareto fronts}. A MO-PTSP result can be seen as a triplet $R: (T, F, D)$, where $T$ is the time taken to complete the game, $F$ is the fuel spent and $D$ is the damage taken by the ship at the end of the run. Applying concepts of Multi-Objective optimization, it is said that a result $R_1$ \textit{dominates} another result $R_2$ (and it is written $R_1 \preceq R_2$) if:
 
 \begin{enumerate}
 \item $R_1$ is no worse than $R_2$ in all objectives.
@@ -468,7 +466,7 @@ individuals on the Pareto front receive rank~$1$ and are removed;
 from what remains of the population, individuals on the new Pareto front receive rank~$2$ and are removed;
 and so on until the population is exhausted.
 Within each rank, the individuals are sorted by the sum of time, fuel and damage, with equal weights.
-Igel et al~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but due to time constraints these were not implemented.
+Igel et al.~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but due to time constraints these were not implemented.
 
 Results of parameter tuning are presented in~\cite{Powley2013_moptsp}.
 Parameter tuning was run three times, obtaining three different sets of parameters.
@@ -477,18 +475,17 @@ but make slightly different tradeoffs between objectives:
 for example the third set performs worse on time than the other two, but uses significantly less fuel.
 
 CMA-ES is able to handle noisy and esoteric fitness landscapes, and is explicitly designed not to require tuning.
-This makes it especially attractive as a ``black box'' optimisation method;
-the mathematics behind it is sophisticated but can largely be ignored by the user.
+This makes it especially attractive as a ``black box'' optimisation method;.
 A mature Java implementation has been made freely available by the algorithm's creators\footnote{\url{https://www.lri.fr/~hansen/}},
 and this implementation was used to tune the parameters for \textsc{PurofMovio}.
 
-\section{Conclusions} \label{sec:conc}
+\section{Conclusion} \label{sec:conc}
 
 This paper describes the Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) game and competition, detailing rules, tracks, rankings scheme and results. It also analyzed the winning entry of the competition, a Monte Carlo Tree Search algorithm with an heuristic tuned by CMA-ES.  
 
-The multi-objective rankings scheme reflect accurately the quality of the solutions, as the winner's approach performance is much higher than the next best entry. It is also worthwhile mentioning that, in contrast with single-objective rankings, the addition of even a single new result can change importantly the existing Pareto fronts (i.e a new result that dominates all others), causing an important change in the points awarded to each entry.
+The multi-objective rankings scheme reflects accurately the quality of the solutions, as the winner's approach performance is much higher than the next best entry. It is also worthwhile mentioning that, in contrast with single-objective rankings, the addition of even a single new result can change profoundly the existing Pareto fronts (e.g. a new result that dominates all others), resulting in a complete reshuffling of competitors.
 
-The competition attracted controllers that employed different techniques, although most of them were variants of MCTS, a technique that has shown its proficiency in a wide range of problems in the literature and also in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the entry by Weijia et al.~\cite{Wang13}. Finally, the winning controller showed the benefits of MCTS as a real-time planning and control algorithm, the importance of dividing long term and short term planning (waypoint order versus navigation), how coarsening the action space using macro-actions is beneficial for real-time games, and the usage of an evolutionary approach to tune the parameters of the heuristics employed.
+The competition attracted controllers that employed different techniques, although most of them were variants of MCTS, a technique that has shown its quality and resilience in a wide range of problems both in literature and in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the entry by Weijia et al.~\cite{Wang13}. Finally, the winning controller showed the benefits of MCTS as a real-time planning and control algorithm in conjunction with a number of add-ons, as the importance of dividing long term and short term planning (waypoint order versus navigation), coarsening the action space using macro-actions, and the use of evolutionary algorithms to tune the parameters of the heuristics employed. Possible promising future research avenues include learning these add-ons automatically and not incorporating them by hand. 
 
 
 \bibliographystyle{IEEEtran}
