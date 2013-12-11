@@ -44,7 +44,7 @@ breakatwhitespace=false,        				% sets if automatic breaks should only
 
 \begin{document}
 
-\title{The 2013 Multi-Objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley, Daniel Whitehouse and Peter Cowling are with the Computer Science department of the University of York (email:  \{edward.powley, dw830, peter.cowling\}@york.ac.uk).} \thanks{This work was supported by EPSRC grant EP/H048588/1.}}
+\title{The 2013 Multi-Objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley, Daniel Whitehouse and Peter Cowling are with the Department of Computer Science and York Centre for Complex Systems Analysis, University of York (email:  \{\mbox{edward.powley}, \mbox{dw830}, \mbox{peter.cowling}\}@york.ac.uk).} \thanks{This work was supported by EPSRC grants EP/H048588/1 and EP/H049061/1.}}
 
 \author{Diego Perez, Edward Powley, Daniel Whitehouse, Spyridon Samothrakis, Simon Lucas, Peter Cowling}
 
@@ -68,9 +68,9 @@ The purpose of the competition presented in this paper is to cover one of the as
 
 This paper is organized as follows: Section~\ref{sec:moptsp} explains the game used in the competition. Then, Section~\ref{sec:contr} details the game framework and how controllers for this game can be created. Later, Section~\ref{sec:comp} defines the competition, its different tracks and rules. The results of the contest are discussed in Section~\ref{sec:res}. Section~\ref{sec:purofmovio} explains the approach taken by the competition winner and, finally, Section~\ref{sec:conc} concludes this paper with a final evaluation of the competition.
 
-\section{The Multi-objective Travelling Salesman Problem} \label{sec:moptsp}
+\section{The Multi-objective Physical Travelling Salesman Problem} \label{sec:moptsp}
 
-The Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) is a modification of the Physical Travelling Salesman Problem (PTSP), previously introduced by Perez et al.~\cite{PerezCEC2012} for the WCCI 2012 PTSP Competition. The PTSP is a game where the player controls a ship with the goal of visiting $10$ waypoints scattered around the maze in as little time as possible. MO-PTSP adds two more goals to the game: the waypoints must be visited while spending as less fuel as possible and reducing the damage suffered by the ship. This section specifies the main components of the MO-PTSP, such as the game physics, objectives and maps. 
+The Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) is a modification of the Physical Travelling Salesman Problem (PTSP), previously introduced by Perez et al.~\cite{PerezCEC2012} for the WCCI 2012 PTSP Competition. The PTSP is a game where the player controls a ship with the goal of visiting $10$ waypoints scattered around the maze in as little time as possible. MO-PTSP adds two more goals to the game: the waypoints must be visited while spending as little fuel as possible and reducing the damage suffered by the ship. This section specifies the main components of the MO-PTSP, such as the game physics, objectives and maps. 
 
 \subsection{Game Physics and the real-time Component}
 
@@ -84,7 +84,7 @@ Both PTSP and MO-PTSP are games that share some characteristics. One of these si
 	\end{center}
 \end{figure}
 
-Left and right rotations are performed using a fixed angle, set to $\pi/60$ radians, and the ship acceleration is set to $0.025$ pixels per game step squared, values determined by trial an error in order to provide a satisfactory game-play experience. The ship keeps its velocity from a game state to the next, making \textit{inertia} a key aspect to take into account when governing the ship. However, the ship would reach a full stop eventually if no acceleration actions are provided, as there is a loss of speed due to \textit{friction}. This friction is  set to $0.99$ (this is, only $1\%$ of the speed is lost at each step), a value also determined empirically. 
+Left and right rotations are performed using a fixed angle, set to $\pi/60$ radians, and the ship acceleration is set to $0.025$ pixels per game step squared, values determined by trial and error in order to provide a satisfactory game-play experience. The ship keeps its velocity from a game state to the next, making \textit{inertia} a key aspect to take into account when governing the ship. However, the ship would reach a full stop eventually if no acceleration actions are provided, as there is a loss of speed due to \textit{friction}. This friction is  set to $0.99$ (this is, only $1\%$ of the speed is lost at each step), a value also determined empirically. 
 
 The location of the ship in the world can be uniquely determined by three vectors: \textit{position}, that specifies the coordinates of the center of the ship in the maze; \textit{direction}, a vector that indicates where the ship is facing to; and \textit{velocity}, that determines the movement of the ship, including its direction and speed. Note that direction and velocity do not need to be aligned, which in practical terms means the ship could be facing one direction and moving towards another. Given an action, this part of state of the ship is modified as shown in Algorithm~\ref{alg:shipUpadte}.
 
@@ -116,17 +116,17 @@ Another similarity between PTSP and MO-PTSP is the real-time component of the ga
 
 While the PTSP was a bit more permissive, MO-PTSP imposes disqualifications in case this time limit is severely violated. In the original game, a neutral action was applied if the controller took more than $40$ milliseconds to provide an action, but no other consequences were derived from this misbehaviour. The game was then susceptible to cheating (from a real-time point of view, this stops the continuity of the game, which is not acceptable), as an agent could employ as long as it needs to plan ahead while the only consequence would be a neutral action in a single game tick.  
 
-MO-PTSP tackles this situation by imposing a second time limit, set to $120$ milliseconds. In case this is violated, it causes the end of the game by disqualifying the player. Although controllers could still potentially spend more than $40$ milliseconds (with the same neutral move performed as a penalty), the risk of being disqualified, and the limited gain that could be obtained by the extra milliseconds spent, discourage participants to performed this trick.
+MO-PTSP tackles this situation by imposing a second time limit, set to $120$ milliseconds. In case this is violated, it causes the end of the game by disqualifying the player. Although controllers could still potentially spend more than $40$ milliseconds (with the same neutral move performed as a penalty), the risk of being disqualified, and the limited gain that could be obtained by the extra milliseconds spent, discourages participants from performing this trick.
 
 \subsection{A Multi-Objective Approach}
 
-The main difference with respect to the original game, the PTSP, can be found in the three different objectives that need to be minimized: 1) \textbf{Time}: the player must collect all waypoints scattered around the maze in as less time steps (or game cycles) as possible; 2) \textbf{Fuel}: the fuel consumed at the end of the game must be minimized; and 3) \textbf{Damage}: the ship should end the game with as little damage as possible.
+The main difference with respect to the original game, the PTSP, can be found in the three different objectives that need to be minimized: 1) \textbf{Time}: the player must collect all waypoints scattered around the maze in as few time steps (or game cycles) as possible; 2) \textbf{Fuel}: the fuel consumed at the end of the game must be minimized; and 3) \textbf{Damage}: the ship should end the game with as little damage as possible.
 
 It is very important to stress that all waypoints must be visited in order to consider a game as successfully finished. Otherwise, a very simple but plausible approach for the player can be not to move at all and hence obtain a good result for the other two objectives (no fuel spent and damage suffered). A time-dependant game over condition is established when the ship does not visit a waypoint once a timer has run off. This timer, initially set to $800$ time steps, is reduced by $1$ at every step if no waypoint is visited, causing the end of the game if it gets to $0$.%\footnote{PTSP also employed this timer, starting at $1000$. Hence, MO-PTSP is slightly more difficult in this sense, as it requires faster controllers.}. 
 
 The ship starts with an initial fuel amount of $5000$ units, and one unit is spent every time an acceleration action is performed. Four \textit{fuel canisters} are scattered around the maze, each one providing $250$ units of fuel, and visiting a new waypoint also adds $50$ fuel units more to the ship. It is important to mention that it is not mandatory to pick these fuel canisters up in order to complete the game, being their collection up to the strategy of the player. In case the amount of fuel available in the ship gets to $0$, the agent will not be able to use the throttle any more during that game. 
 
-Regarding the third objective, the ship can be damaged by two different game play elements. First, lava lakes are present in the game levels, dealing $1$ unit of damage for every game step the ship is driving through them. Secondly, the ship also gets damage when colliding with obstacles (with the exception of \textit{elastic} obstacles, such normal and \textit{damaging} obstacles. The former type of obstacles (normal walls) inflict $10$ units of damage. The latter obstacles, created for this game, produce a more harming effect, dealing $30$ damage units. If the player's damage gets up to $5000$ units, the ship is destroyed and the game is over.
+Regarding the third objective, the ship can be damaged by two different game play elements. First, lava lakes are present in the game levels, dealing $1$ unit of damage for every game step the ship is driving through them. Secondly, the ship also gets damage when colliding with obstacles (with the exception of \textit{elastic} obstacles), such as normal and \textit{damaging} obstacles. The former type of obstacles (normal walls) inflict $10$ units of damage. The latter obstacles, created for this game, produce a more harming effect, dealing $30$ damage units. If the player's damage gets up to $5000$ units, the ship is destroyed and the game is over.
 
 When the ship is damaged by a collision, it enters in an invulnerable state, where no more collision damage can be dealt to the agent during $50$ game steps. This avoids situations when too much damage is suffered by the ship if it is touching an obstacle right after colliding with it.
 
@@ -137,7 +137,7 @@ Each level for the MO-PTSP game follows a specific format, employed in several g
 For MO-PTSP, obstacles are represented by the characters 'T', 'D' and 'L', to be used to create normal, damaging and elastic obstacles respectively. Normal surfaces use the character '.', while lava lakes employ ':'. Waypoints and fuel canisters are indicated with 'C' and 'F' respectively, and the player's ship is represented by the character 'S'.
 
 
-Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn by the framework. Not visited waypoints are depicted as (filled) blue circles, while the already visited ones are shown as empty circles. Green ellipsis are used for the fuel canisters,  normal surface is of brown colour, whereas lava is a red-dotted yellow surface. Elastic collisions are blue, normal collisions black and damaging collisions are drawn in red. The ship is drawn as a dark blue polygon, with a green triangle at the back when thrust is being used. The trajectory followed by the ship is drawn with a black line.
+Figure~\ref{fig:sampleMap} presents an example of a MO-PTSP map, as it is drawn by the framework. Not visited waypoints are depicted as (filled) blue circles, while the already visited ones are shown as empty circles. Green ellipses are used for the fuel canisters,  normal surface is of brown colour, whereas lava is a red-dotted yellow surface. Elastic collisions are blue, normal collisions black and damaging collisions are drawn in red. The ship is drawn as a dark blue polygon, with a green triangle at the back when thrust is being used. The trajectory followed by the ship is drawn with a black line.
 
 \begin{figure} [!h]
 	\begin{center}
@@ -177,7 +177,7 @@ In order to create a controller in this framework, a new class must be created i
 \code{int getAction(Game, long);}
 \end{center}
 
-This method receives a copy of the current game state and a variable indicating when the controller is due to return an action to execute. When this method is called, this timer is set to $40$ milliseconds beyond that instant. The value returned by this method should be one of the following $6$ action values, from \code{framework.core.Controller}:
+This method receives a copy of the current game state and a variable indicating the time when the controller is due to return an action to execute. When this method is called, this timer is set to $40$ milliseconds beyond that instant. The value returned by this method should be one of the following $6$ action values, from \code{framework.core.Controller}:
 
 \begin{itemize}
 \item \code{ACTION_NO_FRONT}: Throttle off, no steering.
@@ -190,7 +190,7 @@ This method receives a copy of the current game state and a variable indicating 
 
 Apart from this method, every controller must implement a \code{public} constructor that receives the same two parameters: a game instance, with the initial state, and a time due. This constructor will be called just before the game starts, and allows the controller to initialize its own data structures and perform some initial planning. The budget time for the constructor of the controller is $1$ second, and the game will be over if this time is violated.
 
-Hence, the game flow of MO-PTSP is simple: the framework creates the game, calculates the initialization due time ($1$ second beyond that instant) and calls the controller's constructor to create the player. If the constructor takes more time than the allowed, it is disqualified from this game. Then, until the game is over, the framework calls the function \code{getAction} to retrieve the next move to execute, providing the current game state and the time due for the calculation ($40$ seconds after the \code{getAction} call). In case this function takes more than $40$ milliseconds, the neutral action (\code{ACTION_NO_FRONT}) is executed. If the call took more than $120$ milliseconds, the game is over and the controller is disqualified for the game.
+Hence, the game flow of MO-PTSP is simple: the framework creates the game, calculates the initialization due time ($1$ second beyond that instant) and calls the controller's constructor to create the player. If the constructor takes more time than the allowed, it is disqualified from this game. Then, until the game is over, the framework calls the function \code{getAction} to retrieve the next move to execute, providing the current game state and the time due for the calculation ($40$ milliseconds after the \code{getAction} call). In case this function takes more than $40$ milliseconds, the neutral action (\code{ACTION_NO_FRONT}) is executed. If the call took more than $120$ milliseconds, the game is over and the controller is disqualified for the game.
 
 %When the game is over, all actions executed by the agent can be dumped into a file. The format of this file will be the total amount of moves made, followed by each action returned, one per line.
 
@@ -462,7 +462,7 @@ it is readily adapted to multiobjective problems~\cite{Igel2007}.
 To measure the fitness of a particular parameter vector,
 the controller is executed once on each of the $10$ starter kit maps and the total time, fuel and damage are measured.
 The population is then ranked by \emph{non-dominated sorting}:
-individuals on the Pareto front receive rank~$1$ and are removed;
+individuals on the optimal Pareto front receive rank~$1$ and are removed;
 from what remains of the population, individuals on the new Pareto front receive rank~$2$ and are removed;
 and so on until the population is exhausted.
 Within each rank, the individuals are sorted by the sum of time, fuel and damage, with equal weights.
@@ -470,14 +470,14 @@ Igel et al.~\cite{Igel2007} suggest more sophisticated tie-breaking schemes, but
 
 Results of parameter tuning are presented in~\cite{Powley2013_moptsp}.
 Parameter tuning was run three times, obtaining three different sets of parameters.
-The three tuned controllers outperform our best efforts at hand-tuning,
+The three tuned controllers outperform the hand-tuned controller,
 but make slightly different tradeoffs between objectives:
 for example the third set performs worse on time than the other two, but uses significantly less fuel.
 
 CMA-ES is able to handle noisy and esoteric fitness landscapes, and is explicitly designed not to require tuning.
-This makes it especially attractive as a ``black box'' optimisation method;.
+This makes it especially attractive as a ``black box'' optimisation method.
 A mature Java implementation has been made freely available by the algorithm's creators\footnote{\url{https://www.lri.fr/~hansen/}},
-and this implementation was used to tune the parameters for \textsc{PurofMovio}.
+which was used to tune the parameters for \textsc{PurofMovio}.
 
 \section{Conclusion} \label{sec:conc}
 
