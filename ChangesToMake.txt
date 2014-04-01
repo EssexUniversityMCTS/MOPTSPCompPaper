@@ -1,0 +1,23 @@
+* Ed's affiliation: now with Orange Helicopter Games, York, UK (email: ed@orangehelicopter.com<mailto:ed@orangehelicopter.com>).
+
+* Section III. THE MO-PTSP FRAMEWORK could perhaps be shortened a bit, especially subsection A, which 
+contains information that is of less scientific interest than the rest of the paper. (It is also my
+understanding that this information could be found on web pages and in other published papers.) This 
+could leave room for more discussion on the organisation of the competition.
+
+* The competition was very decisively won. This highlights the quality of the winning controller, but also the 
+fact that very few participants submitted controllers to the competition. I think the paper deserves a mention 
+of this, and perhaps some analysis of why more people did not submit. Will you run the competition again? If 
+so, how will you avoid the perception that this is a rather complicated game task to understand and write a 
+controller for? Do you think the fact that the team writing the winning controller collaborates closely with 
+the team organising the competition is a potential problem, for example in that it might dissuade independent 
+competitors from participating?
+
+* "With respect to the previous work, the authors added a real-time component of the game" ? WHAT?? Check this.
+
+* About PurofMovio:
+ 1) Include the name of the tunable parameters for PUROFMOVIO controller.
+ 2) It would be interesting to know the runs number carried out in the parameters adjustment, as well as the 
+standard deviations obtained in these parameters.
+
+* Peter Cowling ->  Peter I. Cowling
