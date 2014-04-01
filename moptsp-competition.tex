@@ -44,9 +44,9 @@ breakatwhitespace=false,        				% sets if automatic breaks should only
 
 \begin{document}
 
-\title{The 2013 Multi-Objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley, Daniel Whitehouse and Peter Cowling are with the Department of Computer Science and York Centre for Complex Systems Analysis, University of York (email:  \{\mbox{edward.powley}, \mbox{dw830}, \mbox{peter.cowling}\}@york.ac.uk).} \thanks{This work was supported by EPSRC grants EP/H048588/1 and EP/H049061/1.}}
+\title{The 2013 Multi-Objective Physical Travelling Salesman Problem Competition \thanks{Diego Perez, Spyridon Samothrakis and Simon Lucas are with the School of Computer Science and Electronic Engineering of the University of Essex (email: \{dperez, ssamot, sml\}@essex.ac.uk).} \thanks{Edward Powley is with Orange Helicopter Games, York, UK (email: ed@orangehelicopter.com).} \thanks{Daniel Whitehouse and Peter I. Cowling are with the Department of Computer Science and York Centre for Complex Systems Analysis, University of York (email:  \mbox{dw830}, \mbox{peter.cowling}\}@york.ac.uk).}  \thanks{This work was supported by EPSRC grants EP/H048588/1 and EP/H049061/1.}}
 
-\author{Diego Perez, Edward Powley, Daniel Whitehouse, Spyridon Samothrakis, Simon Lucas, Peter Cowling}
+\author{Diego Perez, Edward Powley, Daniel Whitehouse, Spyridon Samothrakis, Simon Lucas, Peter I. Cowling}
 
 
 % make the title area
@@ -153,12 +153,11 @@ Figure~\ref{fig:sampleMap} presents an example of an MO-PTSP map, as it is drawn
 
 \subsection{Software} \label{ssec:software}
 
-The MO-PTSP framework code can be downloaded from the competition webpage~\footnote{\url{http://www.ptsp-game.net/}}. The framework, under the name of \textit{Starter Kit}, contains the code, documentation, and 10 maps to test the controllers in. The software is written in Java, and is organised into the following packages:
+The MO-PTSP framework code can be downloaded from the competition webpage~\footnote{\url{http://www.ptsp-game.net/}}. The framework, under the name of \textit{Starter Kit}, contains the code, documentation, and 10 maps to test the controllers in. The software is written in Java, and these are the most important packages:
 
 \begin{itemize}
-\item Package \code{controllers}: this package contains game bots. The framework also includes several sample controllers to help participants develop their own. Sample controllers are explained in Section~\ref{ssec:sample}.
-\item Package \code{framework}: this contains the main code of the game, and is divided into several sub-packages: the \code{core} package takes care of the logic of game entities, such as waypoints, fuel canisters, ship, etc. \code{graph}: contains the code for a simple pathfinding tool, that can be used to calculate the shortest path between any pair of points in the map (see Section~\ref{ssec:cont} for more details). Finally, \code{utils} includes several useful classes for the framework, such as 2D vectors and visual frames.
-\item Package \code{wox.serial}: this package contains a sample controller that uses the last version of the Wox Serializer~\footnote{\url{woxserializer.sourceforge.net}}. This is a useful implementation for controllers that use some kind of offline training, such as evolutionary algorithms.
+\item Package \code{controllers}: this package contains sample controllers to help participants develop their own (see Section~\ref{ssec:sample}).
+\item Package \code{framework}: this contains the main code of the game, which takes care of the logic of the game entities (waypoints, ship, etc.); \code{graph}: contains the code for a simple pathfinding tool (see Section~\ref{ssec:cont} for more details); finally, \code{utils} includes several useful classes for the framework, such as 2D vectors and visual frames.
 \end{itemize}
 
 Additionally, the package \code{framework} contains three Java classes that allow the execution of the game:
@@ -483,7 +482,9 @@ which was used to tune the parameters for \textsc{PurofMovio}.
 
 This paper describes the Multi-Objective Physical Travelling Salesman Problem (MO-PTSP) game and competition, detailing rules, tracks, rankings scheme and results. It also analyzed the winning entry of the competition, a Monte Carlo Tree Search algorithm with an heuristic tuned by CMA-ES.  
 
-The multi-objective rankings scheme reflects accurately the quality of the solutions, as the winner's approach performance is much higher than the next best entry. It is also worthwhile mentioning that, in contrast with single-objective rankings, the addition of even a single new result can change profoundly the existing Pareto fronts (e.g. a new result that dominates all others), resulting in a complete reshuffling of competitors.
+The competition was won by a large margin, showing the strength of the submitted controller. But it is also worthwhile highlighting that the competition did not received many submissions. In our opinion, this might be due to the complexity of the game, and to the head start the winners had by extending their controller that won the previous competition.
+
+The multi-objective rankings scheme reflects accurately the quality of the solutions, as the winner's approach performance is much higher than the next best entry. An important remark is that, in contrast with single-objective rankings, the addition of even a single new result can change profoundly the existing Pareto fronts (a new result may dominate all others), resulting in a complete reshuffling of competitors.
 
 The competition attracted controllers that employed different techniques, although most of them were variants of MCTS, a technique that has shown its quality and resilience in a wide range of problems both in literature and in different contests (as in the previous WCCI 2012 PTSP Competition). In this particular case, the competition was useful for testing new algorithms that are in development, like the entry by Weijia et al.~\cite{Wang13}. Finally, the winning controller showed the benefits of MCTS as a real-time planning and control algorithm in conjunction with some add-ons, as the importance of dividing long term and short term planning (waypoint order versus navigation), coarsening the action space using macro-actions, and the use of evolutionary algorithms to tune the parameters of the heuristics employed. Possible promising future research avenues include learning these add-ons automatically and not incorporating them by hand. 
 
